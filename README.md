@@ -1,8 +1,8 @@
 # Divisor
-Convert measurements to fractions based on your desired divisor - 8th/16th/32nd/64th/Auto
+Convert measurements to fractions based on your desired divisor - 1/8, 1/4, 1/16, 1/32, and 1/64
 
 ## Background
-I have a mix of tools with metric and imperial scales and created the [`meas_conv_ft_in` google sheet](https://docs.google.com/spreadsheets/d/1B7RXa-z3N4YO6ai6H7HnCFLuNT1aBMJFNJuL8XhFxfY/edit?usp=sharing) years ago to 1) help me quickly convert metric measurements to imperial and 2) round decimal values to the nearest fraction of an `inch` or `feet+inch`. I admit the unit conversion aspect of this tool is a crutch, but it's been a useful metric learning tool and the imperial  fraction conversion aspect has served me well. 
+I have a mix of tools with metric and imperial scales and created the [`meas_conv_ft_in` google sheet](https://docs.google.com/spreadsheets/d/1B7RXa-z3N4YO6ai6H7HnCFLuNT1aBMJFNJuL8XhFxfY/edit?usp=sharing) years ago to 1) help me quickly convert metric measurements to imperial and 2) round decimal values to the nearest fraction of an `inch` or `feet+inch`. I admit the unit conversion aspect of this tool is a crutch, but it's been a useful metric learning tool and the imperial fraction conversion aspect has served me well. 
 
 ## Motivation
 I have two goals for this project:
