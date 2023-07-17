@@ -8,3 +8,12 @@ I have a mix of tools with metric and imperial scales and created the [`meas_con
 I have two goals for this project:
 1. I would like to exercise my python, web development, and ci/cd skills by converting this simple google sheet into a web application that will work well on mobile and desktop
 2. I'd like to share it via GitHub so that others may leverage it for their projects. 
+
+## Requirements
+See [REQUIREMENTS.csv](./REQUIREMENTS.csv)
+
+## Development
+See [CONTRIBUTING.md](./CONTRIBUTING.md)
+
+## Deployment
+https://divisor.onrender.com/

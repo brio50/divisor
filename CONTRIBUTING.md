@@ -24,12 +24,14 @@ See `package.json` > `"scirpts"`, to be executed from root directory:
 1. `npm run build`
 2. `flask --app divisor run --debug`
 
-## Deploy Github Pages
+## Deploy Gunicorn
 
-See `package.json` > `"scirpts"`, to be executed from root directory:
-1. `npm run deploy`
-   * `predeploy` builds the site and bundles it in the `./static/dist` folder
-   * `deploy` pushes the contents of that folder to a new commit on the `gh-pages` branch
+See [Issue #2](https://github.com/brio50/divisor/issues/2), render.com python web service:
+1. Environment Variables > Key: `PYTHON_VERSION` > Value: `3.10.2`
+2. Settings > Build Command: `pip install -r requirements.txt && npm install && npm run build`
+3. Settings > Start Command: `gunicorn -w 4 -b 0.0.0.0 'divisor:create_app()'`
+
+https://divisor.onrender.com is linked to this github repository and updated on git push.
 
 # References
 
