@@ -23,7 +23,7 @@
   "scripts": {
     "predeploy": "npm run build",
     "build": "webpack --progress --mode=development --config webpack.config.js",
-    "deploy": "gh-pages -d dist"
+    "deploy": "gh-pages -d static/dist"
   },
   "devDependencies": {
     "@babel/core": "^7.22.9",

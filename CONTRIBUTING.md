@@ -22,7 +22,7 @@
 
 See `package.json` > `"scirpts"`, to be executed from root directory:
 1. `npm run build`
-2. `flash --app divisor run --debug`
+2. `flask --app divisor run --debug`
 
 ## Deploy Github Pages
 
