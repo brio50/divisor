@@ -4,18 +4,18 @@
     {% block head %}
 	<meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>{% block title %}Divisor{% endblock %}</title>
+	<title>Divisor - {% block title %}{% endblock %}</title>
     <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" /> -->
     {% endblock %}
 </head>
 
 <body class="d-flex flex-column h-100">
+
     {% block body %}
 
     <header>
-    {% include "layouts/navbar.html" %}
+        {% include "layouts/navbar.html" %}
     </header>
 
     <main class="flex-shrink-0">
@@ -24,12 +24,14 @@
     </main>
 
     <footer class="footer mt-auto py-3 bg-dark">
-      <div class="container text-center">
-          <a href="https://github.com/brio50/divisor"><i class="fa-brands fa-github" style="color:#fff"></i></a>
-      </div>
+        <div class="container text-center">
+            <a href="https://github.com/brio50/divisor"><i class="fa-brands fa-github" style="color:#fff"></i></a>
+        </div>
     </footer>
 
     {% endblock %}
+
+    <script type="text/javascript" src="{{ url_for('static', filename='dist/bundle.js') }}"></script>
 
 </body>
 </html>

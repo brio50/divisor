@@ -1,30 +1,19 @@
 /* React */
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
+import MarkdownToHtml from './readme.js';
 
-/* Bootstrap and Fontawesome */
+/* Bootstrap, Fontawesome, Jquery, Popper */
 import "bootstrap/dist/css/bootstrap.css";
 import '@fortawesome/fontawesome-free/js/all.js';
-
-/* Function Specific */
-/*import logo_image from '../img/react.svg';*/
-
-/******************************************************************************************/
-
-const root = ReactDOM.createRoot(
-  document.getElementById('root')
-);
-
-function tick() {
-  const element = (
-    <div>
-        <h1>React</h1>
-        <p>{new Date().toLocaleTimeString()}</p>
-    </div>
-  );
-  root.render(element);
-  }
-
-setInterval(tick, 1000);
+import '@popperjs/core';
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 /******************************************************************************************/
+
+const domNode = document.getElementById('readme');
+console.log(domNode);
+const root = createRoot(domNode);
+root.render(MarkdownToHtml());
+
+
