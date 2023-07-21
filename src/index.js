@@ -7,7 +7,6 @@ import reportWebVitals from './reportWebVitals';
 /* Bootstrap, Fontawesome, Jquery, Popper */
 import "bootstrap/dist/css/bootstrap.css";
 import '@fortawesome/fontawesome-free/js/all.js';
-import '@popperjs/core';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 var rootNode = document.getElementById('root');

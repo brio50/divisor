@@ -2,9 +2,9 @@ import './App.css';
 import { useState } from "react";
 
 function App() {
-  const [millimeters, setMM] = useState(null);
-  const [inches, setIN] = useState(null);
-  const [feet, setFT] = useState(null);
+  const [millimeters, setMM] = useState({});
+  const [inches, setIN] = useState({});
+  const [feet, setFT] = useState({});
 
   const onChangeMM = (event) => {
     setMM(event.target.value);
@@ -29,7 +29,7 @@ function App() {
 
   return (
 
-    <main class="flex-shrink-1" role="main">
+    <main className="flex-shrink-1" role="main">
 
       <noscript>You need to enable JavaScript to run this app.</noscript>
 
@@ -39,8 +39,8 @@ function App() {
 
           <div className="col">
 
-            <div class="input-group">
-              <select className="form-select align-middle mb-3" aria-label="divisor">
+            <div className="input-group">
+              <select className="form-select align-middle mb-3" aria-label="divisor" disabled>
                 <option>Select a divisor:</option>
                 <option value="1">1/64</option>
                 <option value="2">1/32</option>
@@ -50,27 +50,27 @@ function App() {
               </select>
             </div>
 
-            <label for="input-mm" class="form-label">Millimeters</label>
-            <div class="input-group">
-              <input id="input-mm" value={millimeters} onChange={onChangeMM} type="number" class="form-control" />
-              <div class="input-group-append">
-                <span class="input-group-text"> mm </span>
+            <label for="input-mm" className="form-label">Millimeters</label>
+            <div className="input-group">
+              <input id="input-mm" value={millimeters} onChange={onChangeMM} type="number" className="form-control" />
+              <div className="input-group-append">
+                <span className="input-group-text">{millimeters} mm </span>
               </div>
             </div>
 
-            <label for="input-mm" class="form-label">Inches</label>
-            <div class="input-group">
-              <input id="input-mm" value={inches} onChange={onChangeIN} type="number" class="form-control" />
-              <div class="input-group-append">
-                <span class="input-group-text"> in </span>
+            <label for="input-mm" className="form-label">Inches</label>
+            <div className="input-group">
+              <input id="input-mm" value={inches} onChange={onChangeIN} type="number" className="form-control" />
+              <div className="input-group-append">
+                <span className="input-group-text">&lt;VALUE-FRACTION&gt; in </span>
               </div>
             </div>
 
-            <label for="input-mm" class="form-label">Feet + Inches</label>
-            <div class="input-group">
-              <input id="input-mm" value={feet} onChange={onChangeFT} type="number" class="form-control" />
-              <div class="input-group-append">
-                <span class="input-group-text"> ft+in </span>
+            <label for="input-mm" className="form-label">Feet + Inches</label>
+            <div className="input-group">
+              <input id="input-mm" value={feet} onChange={onChangeFT} type="number" className="form-control" />
+              <div className="input-group-append">
+                <span className="input-group-text">&lt;VALUE&gt; ft - &lt;VALUE-FRACTION&gt; in </span>
               </div>
             </div>
           </div>
