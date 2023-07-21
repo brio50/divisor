@@ -36,46 +36,45 @@ function App() {
       <div className="container">
 
         <div className="row">
-          <div class="input-group">
-            <select className="form-select align-middle mb-3" aria-label="divisor">
-              <option>Select a divisor:</option>
-              <option value="1">1/64</option>
-              <option value="2">1/32</option>
-              <option value="3">1/16</option>
-              <option value="4">1/8</option>
-              <option value="5">1/4</option>
-            </select>
-          </div>
-        </div>
 
-        <div className="row">
-          <label for="input-mm" class="form-label">Millimeters</label>
-          <div class="input-group">
-            <input id="input-mm" value={millimeters} onChange={onChangeMM} type="number" class="form-control" />
-            <div class="input-group-append">
-              <span class="input-group-text"> mm </span>
+          <div className="col">
+
+            <div class="input-group">
+              <select className="form-select align-middle mb-3" aria-label="divisor">
+                <option>Select a divisor:</option>
+                <option value="1">1/64</option>
+                <option value="2">1/32</option>
+                <option value="3">1/16</option>
+                <option value="4">1/8</option>
+                <option value="5">1/4</option>
+              </select>
+            </div>
+
+            <label for="input-mm" class="form-label">Millimeters</label>
+            <div class="input-group">
+              <input id="input-mm" value={millimeters} onChange={onChangeMM} type="number" class="form-control" />
+              <div class="input-group-append">
+                <span class="input-group-text"> mm </span>
+              </div>
+            </div>
+
+            <label for="input-mm" class="form-label">Inches</label>
+            <div class="input-group">
+              <input id="input-mm" value={inches} onChange={onChangeIN} type="number" class="form-control" />
+              <div class="input-group-append">
+                <span class="input-group-text"> in </span>
+              </div>
+            </div>
+
+            <label for="input-mm" class="form-label">Feet + Inches</label>
+            <div class="input-group">
+              <input id="input-mm" value={feet} onChange={onChangeFT} type="number" class="form-control" />
+              <div class="input-group-append">
+                <span class="input-group-text"> ft+in </span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div className="row">
-          <label for="input-mm" class="form-label">Inches</label>
-          <div class="input-group">
-            <input id="input-mm" value={inches} onChange={onChangeIN} type="number" class="form-control" />
-            <div class="input-group-append">
-              <span class="input-group-text"> in </span>
-            </div>
-          </div>
-        </div>
-
-        <div className="row">
-          <label for="input-mm" class="form-label">Feet + Inches</label>
-          <div class="input-group">
-            <input id="input-mm" value={feet} onChange={onChangeFT} type="number" class="form-control" />
-            <div class="input-group-append">
-              <span class="input-group-text"> ft+in </span>
-            </div>
-          </div>
         </div>
 
       </div >
