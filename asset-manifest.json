@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/divisor/static/css/main.1fcda5b4.css",
+    "main.js": "/divisor/static/js/main.4085079b.js",
+    "static/js/496.2e6040f1.chunk.js": "/divisor/static/js/496.2e6040f1.chunk.js",
+    "index.html": "/divisor/index.html",
+    "main.1fcda5b4.css.map": "/divisor/static/css/main.1fcda5b4.css.map",
+    "main.4085079b.js.map": "/divisor/static/js/main.4085079b.js.map",
+    "496.2e6040f1.chunk.js.map": "/divisor/static/js/496.2e6040f1.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.1fcda5b4.css",
+    "static/js/main.4085079b.js"
+  ]
+}
