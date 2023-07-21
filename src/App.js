@@ -54,7 +54,7 @@ function App() {
             <div className="input-group">
               <input id="input-mm" value={millimeters} onChange={onChangeMM} type="number" className="form-control" />
               <div className="input-group-append">
-                <span className="input-group-text">{millimeters} mm </span>
+                <span className="input-group-text">&lt;VALUE&gt; mm </span>
               </div>
             </div>
 
