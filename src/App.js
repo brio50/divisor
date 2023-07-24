@@ -6,13 +6,26 @@ import { useState } from "react";
 function App() {
 
   // TODO: allow user selected input
-  const divisor = 8;
+  const [divisor, setDivisor] = useState({});
+
+  const onChangeSelect = (event) => {
+    var divisor = event.target.value;
+    setDivisor(divisor);
+  };
 
   // unit conversions
   function mm2in(x) { return (x * 0.0393701) };
   function in2mm(x) { return (x / 0.0393701) };
   function ft2in(x) { return (x * 12.0) };
   function in2ft(x) { return (x / 12.0) };
+
+  // greatest common divisor - inputs must be numeric
+  function findGcd(a, b) {
+    if (b === 0) {
+      return Math.abs(a);
+    }
+    return findGcd(b, a % b); // recursive call
+  };
 
   // rounding
   function precision(x) { return (Math.round(x * 1000) / 1000) };
@@ -22,7 +35,6 @@ function App() {
     // based on specified divisor and option 'ft-in' or 'in' provided.
     // Fractions will be reduced automatically.
     //
-    // TODO: value is 0 if user enters "1.", fix this bug
 
     //                                   e.g. value = 16.250 in
     const valueFeet = in2ft(value);                 // 1.354 ft
@@ -39,37 +51,38 @@ function App() {
     var numerator = decimals / (1 / divisor);       // 0.25 * 8 = 2
     var denominator = divisor;                      // = 8
 
-    if (numerator === denominator) {
-      // if fraction is 1
+    // if rounding to nearest divisor yields a fraction of 1, 
+    // step whole number and clear numerator/denominator
+    if (Object.is(numerator, denominator)) {
       wholeInch = wholeInch + 1;
       denominator = 0;
       numerator = 0;
     }
-    else if (denominator % numerator === 0) {
-      // if a number is evenly divisible, remainder will be 0 and we will reduce the fraction
-      console.log(`${numerator}/${denominator} reduced to ...`)
-      denominator = denominator / numerator;
-      numerator = 1;
-      console.log(`${numerator}/${denominator} `)
+
+    // reduce fraction based on greatest common denominator
+    const gcd = findGcd(Number(numerator), Number(denominator))
+    if (!isNaN(gcd)) {
+      console.log(`gcd=${gcd} : ${numerator}/${denominator} reduced to ...`)
+      numerator = numerator / gcd;
+      denominator = denominator / gcd;
     }
 
-    console.log(`value = ${value} valueFeet = ${valueFeet} valueInch = ${valueInch} : wholeFeet = ${wholeFeet} wholeInch = ${wholeInch} fraction = ${numerator} / ${denominator}`)
+    console.log(`value = ${value} valueFeet = ${valueFeet} valueInch = ${valueInch} : wholeFeet = ${wholeFeet} wholeInch = ${wholeInch} fraction = ${numerator}/${denominator}`)
 
+    // format output strings
     switch (option) {
-      // format output strings
 
       case 'ft-in':
-
         if (numerator === 0) {
-          return `${wholeFeet} ft ${wholeInch} in `;
+          return `${wholeFeet} ft ${wholeInch} in`;
         }
         else {
-          return `${wholeFeet} ft ${wholeInch}-${numerator}/${denominator} in `;
+          return `${wholeFeet} ft ${wholeInch}-${numerator}/${denominator} in`;
         }
 
       case 'in':
         if (numerator === 0) {
-          return `${ft2in(wholeFeet) + wholeInch} in `;
+          return `${ft2in(wholeFeet) + wholeInch} in`;
         }
         else {
           return `${ft2in(wholeFeet) + wholeInch}-${numerator}/${denominator} in`;
@@ -81,7 +94,6 @@ function App() {
 
   }
 
-  // TODO: only allow numeric inputs or mathematical expressions
   const fields = { input: [], output: '' }
 
   // react Hook for state management
@@ -89,70 +101,100 @@ function App() {
   const [inches, setIN] = useState(fields);
   const [feet, setFT] = useState(fields);
 
+  // validate divisor input
+  function validateDivisor(divisor) {
+    if (isNaN(divisor)) {
+      alert(`Please enter a divisor!`)
+      return 1; // exit code
+    }
+    else {
+      return 0; // exit code
+    }
+  }
+
+  // validate measurement input
+  // TODO: only allow numeric inputs (error on A-B, a-b, multiple decimals)
+  // TODO: mathematical expressions (only allow +, -, *, / symbols) keyed on = as input?
+  function validateMeasurement(event) {
+    const value = event.target.value;
+    function parseValue(value) {
+      // limit input to *(.|,)#### (4 decimal places)
+      const regex = /([0-9]*[.|,]{0,1}[0-9]{0,4})/s;
+      return value.match(regex)[0];
+    }
+    return (parseValue(value));
+  }
+
   // TODO: consider useReducer instead of useState and spread operator (...)
   const onChangeMM = (event) => {
-    const target = event.target.value;
+
+    if (validateDivisor(divisor)) { return; }
+    const value = validateMeasurement(event)
 
     setMM({
       ...millimeters,
-      input: target,
-      output: precision(target)
+      input: value,
+      output: precision(value)
     });
 
     setIN({
       ...inches,
-      input: precision(mm2in(target)),
-      output: nearest(mm2in(target), divisor, 'in')
+      input: precision(mm2in(value)),
+      output: nearest(mm2in(value), divisor, 'in')
     });
 
     setFT({
       ...feet,
-      input: precision(in2ft(mm2in(target))),
-      output: nearest(mm2in(target), divisor, 'ft-in')
+      input: precision(in2ft(mm2in(value))),
+      output: nearest(mm2in(value), divisor, 'ft-in')
     });
   };
 
   const onChangeIN = (event) => {
-    const target = event.target.value;
+
+    if (validateDivisor(divisor)) { return; }
+    const value = validateMeasurement(event)
 
     setMM({
       ...millimeters,
-      input: precision(in2mm(target)),
-      output: precision(in2mm(target))
+      input: precision(in2mm(value)),
+      output: precision(in2mm(value))
     });
 
     setIN({
       ...inches,
-      input: target,
-      output: nearest(target, divisor, 'in')
+      input: value,
+      output: nearest(value, divisor, 'in')
     });
 
     setFT({
       ...feet,
-      input: precision(in2ft(target)),
-      output: nearest(target, divisor, 'ft-in')
+      input: precision(in2ft(value)),
+      output: nearest(value, divisor, 'ft-in')
     });
   };
 
   const onChangeFT = (event) => {
-    const target = event.target.value;
+
+    if (validateDivisor(divisor)) { return; }
+    const value = validateMeasurement(event)
 
     setMM({
       ...millimeters,
-      input: precision(in2mm(ft2in(target))),
-      output: precision(in2mm(ft2in(target)))
+      input: precision(in2mm(ft2in(value))),
+      output: precision(in2mm(ft2in(value)))
     });
 
     setIN({
       ...inches,
-      input: precision(ft2in(target)),
-      output: nearest(ft2in(target), divisor, 'in')
+      input: precision(ft2in(value)),
+      output: nearest(ft2in(value), divisor, 'in')
     });
 
     setFT({
       ...feet,
-      input: target,
-      output: nearest(ft2in(target), divisor, 'ft-in')
+      input: value,
+      output: nearest(ft2in(value), divisor, 'ft-in')
     });
   };
 
@@ -169,19 +211,19 @@ function App() {
           <div className="col">
 
             <div className="input-group">
-              <select className="form-select align-middle mb-3" aria-label="divisor" disabled data-toggle="tooltip" data-placement="top" title="Disabled, set to 1/8 for time being.">
+              <select className="form-select align-middle mb-3" aria-label="divisor" value={divisor} onChange={onChangeSelect}>
                 <option>Select a divisor:</option>
-                <option value="1">1/64</option>
-                <option value="2">1/32</option>
-                <option value="3">1/16</option>
-                <option value="4">1/8</option>
-                <option value="5">1/4</option>
+                <option value="64">1/64</option>
+                <option value="32">1/32</option>
+                <option value="16">1/16</option>
+                <option value="8">1/8</option>
+                <option value="4">1/4</option>
               </select>
             </div>
 
             <label for="input-mm" className="form-label">Millimeters</label>
             <div className="input-group">
-              <input id="input-mm" value={millimeters.input} onChange={onChangeMM} type="number" className="form-control" />
+              <input id="input-mm" value={millimeters.input} onChange={onChangeMM} type="number" className="form-control" step={0.01} />
               <div className="input-group-append col-4">
                 <span className="input-group-text">{millimeters.output} mm </span>
               </div>
@@ -189,7 +231,7 @@ function App() {
 
             <label for="input-in" className="form-label">Inches</label>
             <div className="input-group">
-              <input id="input-in" value={inches.input} onChange={onChangeIN} type="number" className="form-control" />
+              <input id="input-in" value={inches.input} onChange={onChangeIN} type="number" className="form-control" step={0.01} />
               <div className="input-group-append col-4">
                 <span className="input-group-text">{inches.output || 'in'}</span>
               </div>
@@ -197,7 +239,7 @@ function App() {
 
             <label for="input-ft" className="form-label">Feet</label>
             <div className="input-group">
-              <input id="input-ft" value={feet.input} onChange={onChangeFT} type="number" className="form-control" />
+              <input id="input-ft" value={feet.input} onChange={onChangeFT} type="number" className="form-control" step={0.01} />
               <div className="input-group-append col-4">
                 <span className="input-group-text">{feet.output || 'ft'} </span>
               </div>
