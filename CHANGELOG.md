@@ -8,9 +8,13 @@ All notable changes to Divisor will be documented in this file.
 
 ## [1.0.1] - 2023/07/29
 
+### Changed
+
+- Trivial margin/padding updates to make more compact on mobile.
+
 ### Fixed
 
-- mobile keyboard actually allows decimal.
+- Mobile keyboard actually allows decimal.
 
 ## [1.0.0] - 2023/07/29
 
@@ -33,7 +37,7 @@ All notable changes to Divisor will be documented in this file.
 
 ### Changed
 
-- bootstrap input-group-append classes made equal width
+- Bootstrap input-group-append classes made equal width
 
 ### Added
 
