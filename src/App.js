@@ -6,11 +6,13 @@ import { useState } from "react";
 function App() {
 
   // TODO: allow user selected input
-  const [divisor, setDivisor] = useState({});
+  var [divisor, setDivisor] = useState({});
+
+  divisor = 16; // default value
 
   const onChangeSelect = (event) => {
-    var divisor = event.target.value;
-    setDivisor(divisor);
+    const value = event.target.value;
+    setDivisor(value);
   };
 
   // unit conversions
@@ -51,20 +53,20 @@ function App() {
     var numerator = decimals / (1 / divisor);       // 0.25 * 8 = 2
     var denominator = divisor;                      // = 8
 
-    // if rounding to nearest divisor yields a fraction of 1, 
-    // step whole number and clear numerator/denominator
-    if (Object.is(numerator, denominator)) {
-      wholeInch = wholeInch + 1;
-      denominator = 0;
-      numerator = 0;
-    }
-
     // reduce fraction based on greatest common denominator
     const gcd = findGcd(Number(numerator), Number(denominator))
     if (!isNaN(gcd)) {
       console.log(`gcd=${gcd} : ${numerator}/${denominator} reduced to ...`)
       numerator = numerator / gcd;
       denominator = denominator / gcd;
+    }
+
+    // if rounding to nearest divisor yields a fraction of 1,
+    // step whole number and clear numerator/denominator
+    if (numerator === denominator) {
+      wholeInch = wholeInch + 1;
+      denominator = 0;
+      numerator = 0;
     }
 
     console.log(`value = ${value} valueFeet = ${valueFeet} valueInch = ${valueInch} : wholeFeet = ${wholeFeet} wholeInch = ${wholeInch} fraction = ${numerator}/${denominator}`)
@@ -101,17 +103,6 @@ function App() {
   const [inches, setIN] = useState(fields);
   const [feet, setFT] = useState(fields);
 
-  // validate divisor input
-  function validateDivisor(divisor) {
-    if (isNaN(divisor)) {
-      alert(`Please enter a divisor!`)
-      return 1; // exit code
-    }
-    else {
-      return 0; // exit code
-    }
-  }
-
   // validate measurement input
   // TODO: only allow numeric inputs (error on A-B, a-b, multiple decimals)
   // TODO: mathematical expressions (only allow +, -, *, / symbols) keyed on = as input?
@@ -128,7 +119,6 @@ function App() {
   // TODO: consider useReducer instead of useState and spread operator (...)
   const onChangeMM = (event) => {
 
-    if (validateDivisor(divisor)) { return; }
     const value = validateMeasurement(event)
 
     setMM({
@@ -152,7 +142,6 @@ function App() {
 
   const onChangeIN = (event) => {
 
-    if (validateDivisor(divisor)) { return; }
     const value = validateMeasurement(event)
 
     setMM({
@@ -176,7 +165,6 @@ function App() {
 
   const onChangeFT = (event) => {
 
-    if (validateDivisor(divisor)) { return; }
     const value = validateMeasurement(event)
 
     setMM({
@@ -210,12 +198,12 @@ function App() {
 
           <div className="col">
 
+            <label for="input-divisor" className="form-label">Select a Divisor</label>
             <div className="input-group">
-              <select className="form-select align-middle mb-3" aria-label="divisor" value={divisor} onChange={onChangeSelect}>
-                <option>Select a divisor:</option>
+              <select id="input-divisor" className="form-select align-middle mb-3" aria-label="divisor" value={divisor} onChange={onChangeSelect}>
                 <option value="64">1/64</option>
                 <option value="32">1/32</option>
-                <option value="16">1/16</option>
+                <option value="16" selected>1/16</option>
                 <option value="8">1/8</option>
                 <option value="4">1/4</option>
               </select>
