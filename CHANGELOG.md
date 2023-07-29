@@ -6,6 +6,12 @@ All notable changes to Divisor will be documented in this file.
 > and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 > Major and Minor updates will get entries, patches may not get mentions.
 
+## [1.0.1] - 2023/07/29
+
+### Fixed
+
+- mobile keyboard actually allows decimal.
+
 ## [1.0.0] - 2023/07/29
 
 ### Changed
@@ -18,7 +24,7 @@ All notable changes to Divisor will be documented in this file.
 - Mobile keyboard for input form.
 - Trivial bootstrap asthetic improvements.
 
-## Fixed
+### Fixed
 
 - Fraction reduction algorithm: Using greatest common divisor to simplify fractions.
 - Input "1." no longer parsed as "0", had to switch from `<input type="numeric">` to `<input type="text">`

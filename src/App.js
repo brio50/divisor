@@ -251,7 +251,7 @@ function App() {
 
                 <label htmlFor="input-mm" className="form-label">Millimeters</label>
                 <div className="input-group">
-                  <input id="input-mm" value={millimeters.input} onChange={onChangeMM} type="text" className="form-control" pattern="\d*" inputMode="numeric" />
+                  <input id="input-mm" value={millimeters.input} onChange={onChangeMM} type="text" className="form-control" inputMode="decimal" />
                   <div className="input-group-append col-6">
                     <span className="input-group-text">{millimeters.output} mm </span>
                   </div>
@@ -259,7 +259,7 @@ function App() {
 
                 <label htmlFor="input-in" className="form-label">Inches</label>
                 <div className="input-group">
-                  <input id="input-in" value={inches.input} onChange={onChangeIN} type="text" className="form-control" pattern="\d*" inputMode="numeric" />
+                  <input id="input-in" value={inches.input} onChange={onChangeIN} type="text" className="form-control" inputMode="decimal" />
                   <div className="input-group-append col-6">
                     <span className="input-group-text">{inches.output || 'in'}</span>
                   </div>
@@ -267,7 +267,7 @@ function App() {
 
                 <label htmlFor="input-ft" className="form-label">Feet</label>
                 <div className="input-group">
-                  <input id="input-ft" value={feet.input} onChange={onChangeFT} type="text" className="form-control" pattern="\d*" inputMode="numeric" />
+                  <input id="input-ft" value={feet.input} onChange={onChangeFT} type="text" className="form-control" inputMode="decimal" />
                   <div className="input-group-append col-6">
                     <span className="input-group-text">{feet.output || 'ft'} </span>
                   </div>
