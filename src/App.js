@@ -239,13 +239,13 @@ function App() {
               </select>
             </div>
 
-            <div className="row mt-3">
+            <div className="row mt-2">
               <div className="col">
-                Enter a decimal value in any of the input fields:
+                Enter a decimal value in any field:
               </div>
             </div>
 
-            <div className="row mt-3 py-3 rounded bg-light-subtle border">
+            <div className="row mt-2 pt-2 pb-3 rounded bg-light-subtle border">
 
               <div className="col">
 
