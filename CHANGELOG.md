@@ -6,6 +6,23 @@ All notable changes to Divisor will be documented in this file.
 > and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 > Major and Minor updates will get entries, patches may not get mentions.
 
+## [1.0.0] - 2023/07/29
+
+### Changed
+
+- Enabled divisor selection, default value is `1/16`. When divisor is changed, input fields are cleared.
+
+### Added
+
+- Input validation: limited to 4 decimal places, numbers, and decimal symbol. comma is replaced with decimal.
+- Mobile keyboard for input form.
+- Trivial bootstrap asthetic improvements.
+
+## Fixed
+
+- Fraction reduction algorithm: Using greatest common divisor to simplify fractions.
+- Input "1." no longer parsed as "0", had to switch from `<input type="numeric">` to `<input type="text">`
+
 ## [0.2.0] - 2023/07/23
 
 ### Changed

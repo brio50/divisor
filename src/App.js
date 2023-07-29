@@ -1,27 +1,27 @@
 import './App.css';
-import { useState } from "react";
+import { useState } from 'react';
 
 // TODO: follow style/conventions from https://github.com/airbnb/javascript/tree/master/react
 
 function App() {
 
-  // TODO: allow user selected input
-  var [divisor, setDivisor] = useState({});
+  //-------------------------------------------------------------------------------------------------------------------//
+  // back-end - javascript
+  //-------------------------------------------------------------------------------------------------------------------//
 
-  divisor = 16; // default value
-
-  const onChangeSelect = (event) => {
-    const value = event.target.value;
-    setDivisor(value);
-  };
-
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
   // unit conversions
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+
   function mm2in(x) { return (x * 0.0393701) };
   function in2mm(x) { return (x / 0.0393701) };
   function ft2in(x) { return (x * 12.0) };
   function in2ft(x) { return (x / 12.0) };
 
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
   // greatest common divisor - inputs must be numeric
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+
   function findGcd(a, b) {
     if (b === 0) {
       return Math.abs(a);
@@ -29,7 +29,10 @@ function App() {
     return findGcd(b, a % b); // recursive call
   };
 
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
   // rounding
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+
   function precision(x) { return (Math.round(x * 1000) / 1000) };
   function round2divisor(x, divisor) { return (Math.ceil(x * divisor) / divisor) };
   function nearest(value, divisor, option) {
@@ -96,27 +99,52 @@ function App() {
 
   }
 
-  const fields = { input: [], output: '' }
+  //-------------------------------------------------------------------------------------------------------------------//
+  // front-end - javascript
+  //-------------------------------------------------------------------------------------------------------------------//
 
-  // react Hook for state management
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+  // initialize
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+
+  // react Hook for state management - one per html tag
+  const [divisor, setDivisor] = useState(16); // default value
+  const fields = { input: [], output: '' } // global
   const [millimeters, setMM] = useState(fields);
   const [inches, setIN] = useState(fields);
   const [feet, setFT] = useState(fields);
 
-  // validate measurement input
-  // TODO: only allow numeric inputs (error on A-B, a-b, multiple decimals)
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+  // validate
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+
   // TODO: mathematical expressions (only allow +, -, *, / symbols) keyed on = as input?
   function validateMeasurement(event) {
     const value = event.target.value;
     function parseValue(value) {
+      // replace , with .
       // limit input to *(.|,)#### (4 decimal places)
+      // does not allow letters, or any symbols other than . or ,
       const regex = /([0-9]*[.|,]{0,1}[0-9]{0,4})/s;
-      return value.match(regex)[0];
+      return value.match(regex)[0].replace(/,/, ".");
     }
     return (parseValue(value));
   }
 
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+  // update 
+  //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
+
   // TODO: consider useReducer instead of useState and spread operator (...)
+  const onChangeSelect = (event) => {
+    const value = event.target.value;
+    setDivisor(value);
+    // we don't know which input field should be used at divisor selector change
+    // so clear all measurement input fields when divisor is updated
+    setMM(fields);
+    setIN(fields);
+    setFT(fields);
+  };
   const onChangeMM = (event) => {
 
     const value = validateMeasurement(event)
@@ -139,7 +167,6 @@ function App() {
       output: nearest(mm2in(value), divisor, 'ft-in')
     });
   };
-
   const onChangeIN = (event) => {
 
     const value = validateMeasurement(event)
@@ -162,7 +189,6 @@ function App() {
       output: nearest(value, divisor, 'ft-in')
     });
   };
-
   const onChangeFT = (event) => {
 
     const value = validateMeasurement(event)
@@ -186,6 +212,10 @@ function App() {
     });
   };
 
+  //-------------------------------------------------------------------------------------------------------------------//
+  // front-end - html
+  //-------------------------------------------------------------------------------------------------------------------//
+
   return (
 
     <main className="flex-shrink-1" role="main">
@@ -198,40 +228,55 @@ function App() {
 
           <div className="col">
 
-            <label for="input-divisor" className="form-label">Select a Divisor</label>
+            <label htmlFor="input-divisor" className="form-label">Select a Divisor:</label>
             <div className="input-group">
-              <select id="input-divisor" className="form-select align-middle mb-3" aria-label="divisor" value={divisor} onChange={onChangeSelect}>
+              <select id="input-divisor" className="form-select align-middle mb-3" aria-label="divisor" value={divisor || '16'} onChange={onChangeSelect} >
                 <option value="64">1/64</option>
                 <option value="32">1/32</option>
-                <option value="16" selected>1/16</option>
+                <option value="16">1/16</option>
                 <option value="8">1/8</option>
                 <option value="4">1/4</option>
               </select>
             </div>
 
-            <label for="input-mm" className="form-label">Millimeters</label>
-            <div className="input-group">
-              <input id="input-mm" value={millimeters.input} onChange={onChangeMM} type="number" className="form-control" step={0.01} />
-              <div className="input-group-append col-4">
-                <span className="input-group-text">{millimeters.output} mm </span>
+            <div className="row mt-3">
+              <div className="col">
+                Enter a decimal value in any of the input fields:
               </div>
             </div>
 
-            <label for="input-in" className="form-label">Inches</label>
-            <div className="input-group">
-              <input id="input-in" value={inches.input} onChange={onChangeIN} type="number" className="form-control" step={0.01} />
-              <div className="input-group-append col-4">
-                <span className="input-group-text">{inches.output || 'in'}</span>
+            <div className="row mt-3 py-3 rounded bg-light-subtle border">
+
+              <div className="col">
+
+                <label htmlFor="input-mm" className="form-label">Millimeters</label>
+                <div className="input-group">
+                  <input id="input-mm" value={millimeters.input} onChange={onChangeMM} type="text" className="form-control" pattern="\d*" inputMode="numeric" />
+                  <div className="input-group-append col-6">
+                    <span className="input-group-text">{millimeters.output} mm </span>
+                  </div>
+                </div>
+
+                <label htmlFor="input-in" className="form-label">Inches</label>
+                <div className="input-group">
+                  <input id="input-in" value={inches.input} onChange={onChangeIN} type="text" className="form-control" pattern="\d*" inputMode="numeric" />
+                  <div className="input-group-append col-6">
+                    <span className="input-group-text">{inches.output || 'in'}</span>
+                  </div>
+                </div>
+
+                <label htmlFor="input-ft" className="form-label">Feet</label>
+                <div className="input-group">
+                  <input id="input-ft" value={feet.input} onChange={onChangeFT} type="text" className="form-control" pattern="\d*" inputMode="numeric" />
+                  <div className="input-group-append col-6">
+                    <span className="input-group-text">{feet.output || 'ft'} </span>
+                  </div>
+                </div>
+
               </div>
+
             </div>
 
-            <label for="input-ft" className="form-label">Feet</label>
-            <div className="input-group">
-              <input id="input-ft" value={feet.input} onChange={onChangeFT} type="number" className="form-control" step={0.01} />
-              <div className="input-group-append col-4">
-                <span className="input-group-text">{feet.output || 'ft'} </span>
-              </div>
-            </div>
           </div>
 
         </div>
