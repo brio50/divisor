@@ -6,6 +6,12 @@ All notable changes to Divisor will be documented in this file.
 > and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 > Major and Minor updates will get entries, patches may not get mentions.
 
+## [1.0.2] - 2023/08/26
+
+### Added
+
+- Google Analytics
+
 ## [1.0.1] - 2023/07/29
 
 ### Changed
