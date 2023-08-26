@@ -33,6 +33,8 @@ function App() {
   // rounding
   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
+  var error = Number(0); // global
+
   function precision(x) { return (Math.round(x * 1000) / 1000) };
   function round2divisor(x, divisor) { return (Math.ceil(x * divisor) / divisor) };
   function nearest(value, divisor, option) {
@@ -72,7 +74,10 @@ function App() {
       numerator = 0;
     }
 
-    console.log(`value = ${value} valueFeet = ${valueFeet} valueInch = ${valueInch} : wholeFeet = ${wholeFeet} wholeInch = ${wholeInch} fraction = ${numerator}/${denominator}`)
+    // round up, subtract value
+    error = (ft2in(wholeFeet) + wholeInch + (numerator / denominator)) - value;
+
+    console.log(`value = ${value} valueFeet = ${valueFeet} valueInch = ${valueInch} : wholeFeet = ${wholeFeet} wholeInch = ${wholeInch} fraction = ${numerator}/${denominator}, error = ${error}`)
 
     // format output strings
     switch (option) {
@@ -109,7 +114,7 @@ function App() {
 
   // react Hook for state management - one per html tag
   const [divisor, setDivisor] = useState(16); // default value
-  const fields = { input: [], output: '' } // global
+  const fields = { input: [], output: '', error: [] } // global
   const [millimeters, setMM] = useState(fields);
   const [inches, setIN] = useState(fields);
   const [feet, setFT] = useState(fields);
@@ -120,13 +125,27 @@ function App() {
 
   // TODO: mathematical expressions (only allow +, -, *, / symbols) keyed on = as input?
   function validateMeasurement(event) {
-    const value = event.target.value;
+    var value = event.target.value;
     function parseValue(value) {
-      // replace , with .
+
+      // do not allow null OR space
+      if ( !value || value.match(/\s/) ) {
+        return "";
+      }
+
+      // do not allow leading decimal, comma, or non-numeric
+      if ( value.match(/^(\.|\,|[^0-9])/) ) {
+        value = "0.";
+      }
+
       // limit input to *(.|,)#### (4 decimal places)
       // does not allow letters, or any symbols other than . or ,
-      const regex = /([0-9]*[.|,]{0,1}[0-9]{0,4})/s;
-      return value.match(regex)[0].replace(/,/, ".");
+      const regex = /\d+(\.|\,){0,1}\d{0,4}/s;
+
+      if ( value.match(regex)[0] ) {
+        return value.match(regex)[0].replace(/\,/, ".");
+      }
+
     }
     return (parseValue(value));
   }
@@ -152,19 +171,22 @@ function App() {
     setMM({
       ...millimeters,
       input: value,
-      output: precision(value)
+      output: precision(value),
+      error: precision(0)
     });
 
     setIN({
       ...inches,
       input: precision(mm2in(value)),
-      output: nearest(mm2in(value), divisor, 'in')
+      output: nearest(mm2in(value), divisor, 'in'),
+      error: precision(error)
     });
 
     setFT({
       ...feet,
       input: precision(in2ft(mm2in(value))),
-      output: nearest(mm2in(value), divisor, 'ft-in')
+      output: nearest(mm2in(value), divisor, 'ft-in'),
+      error: precision(error)
     });
   };
   const onChangeIN = (event) => {
@@ -174,19 +196,22 @@ function App() {
     setMM({
       ...millimeters,
       input: precision(in2mm(value)),
-      output: precision(in2mm(value))
+      output: precision(in2mm(value)),
+      error: precision(error)
     });
 
     setIN({
       ...inches,
       input: value,
-      output: nearest(value, divisor, 'in')
+      output: nearest(value, divisor, 'in'),
+      error: precision(error)
     });
 
     setFT({
       ...feet,
       input: precision(in2ft(value)),
-      output: nearest(value, divisor, 'ft-in')
+      output: nearest(value, divisor, 'ft-in'),
+      error: precision(error)
     });
   };
   const onChangeFT = (event) => {
@@ -196,19 +221,22 @@ function App() {
     setMM({
       ...millimeters,
       input: precision(in2mm(ft2in(value))),
-      output: precision(in2mm(ft2in(value)))
+      output: precision(in2mm(ft2in(value))),
+      error: precision(error)
     });
 
     setIN({
       ...inches,
       input: precision(ft2in(value)),
-      output: nearest(ft2in(value), divisor, 'in')
+      output: nearest(ft2in(value), divisor, 'in'),
+      error: precision(error)
     });
 
     setFT({
       ...feet,
       input: value,
-      output: nearest(ft2in(value), divisor, 'ft-in')
+      output: nearest(ft2in(value), divisor, 'ft-in'),
+      error: precision(error)
     });
   };
 
@@ -247,32 +275,25 @@ function App() {
 
             <div className="row mt-2 pt-2 pb-3 rounded bg-light-subtle border">
 
-              <div className="col">
+              <label htmlFor="input-mm" className="form-label">Millimeters</label>
+              <div className="input-group">
+                <input id="input-mm" value={millimeters.input} onChange={onChangeMM} type="text" className="form-control col-4" inputMode="decimal" />
+                <span className="input-group-text col-6">{millimeters.output} mm</span>
+                <span className="input-group-text col-2 text-muted">{millimeters.error}</span>
+              </div>
 
-                <label htmlFor="input-mm" className="form-label">Millimeters</label>
-                <div className="input-group">
-                  <input id="input-mm" value={millimeters.input} onChange={onChangeMM} type="text" className="form-control" inputMode="decimal" />
-                  <div className="input-group-append col-6">
-                    <span className="input-group-text">{millimeters.output} mm </span>
-                  </div>
-                </div>
+              <label htmlFor="input-in" className="form-label">Inches</label>
+              <div className="input-group">
+                <input id="input-in" value={inches.input} onChange={onChangeIN} type="text" className="form-control col-4" inputMode="decimal" />
+                <span className="input-group-text col-6">{inches.output || 'in'}</span>
+                <span className="input-group-text col-2 text-muted">{inches.error}</span>
+              </div>
 
-                <label htmlFor="input-in" className="form-label">Inches</label>
-                <div className="input-group">
-                  <input id="input-in" value={inches.input} onChange={onChangeIN} type="text" className="form-control" inputMode="decimal" />
-                  <div className="input-group-append col-6">
-                    <span className="input-group-text">{inches.output || 'in'}</span>
-                  </div>
-                </div>
-
-                <label htmlFor="input-ft" className="form-label">Feet</label>
-                <div className="input-group">
-                  <input id="input-ft" value={feet.input} onChange={onChangeFT} type="text" className="form-control" inputMode="decimal" />
-                  <div className="input-group-append col-6">
-                    <span className="input-group-text">{feet.output || 'ft'} </span>
-                  </div>
-                </div>
-
+              <label htmlFor="input-ft" className="form-label">Feet</label>
+              <div className="input-group">
+                <input id="input-ft" value={feet.input} onChange={onChangeFT} type="text" className="form-control col-4" inputMode="decimal" />
+                <span className="input-group-text col-6">{feet.output || 'ft'}</span>
+                <span className="input-group-text col-2 text-muted">{feet.error}</span>
               </div>
 
             </div>

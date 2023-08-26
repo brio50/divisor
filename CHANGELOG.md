@@ -6,10 +6,16 @@ All notable changes to Divisor will be documented in this file.
 > and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 > Major and Minor updates will get entries, patches may not get mentions.
 
-## [1.0.2] - 2023/08/26
+
+## [1.1.0] - 2023/08/26
+
+### Fixed
+
+- Form validation: null and space ignored and leading decimal, comma, or non-numeric values are ignored.  
 
 ### Added
 
+- Rounding error in 3rd column
 - Google Analytics
 
 ## [1.0.1] - 2023/07/29
@@ -26,7 +32,7 @@ All notable changes to Divisor will be documented in this file.
 
 ### Changed
 
-- Enabled divisor selection, default value is `1/16`. When divisor is changed, input fields are cleared.
+- Enabled divisor selection, default value is $`\frac{1}{16}`$. When divisor is changed, input fields are cleared.
 
 ### Added
 
