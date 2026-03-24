@@ -1,5 +1,7 @@
 # Divisor
 
+![CI](https://github.com/brio50/divisor/actions/workflows/test-and-deploy.yml/badge.svg)
+
 Convert metric measurements to imperial and round decimal values to fractions based on your desired divisor - 1/64, 1/32, 1/16, 1/8, and 1/4
 
 ## Background
