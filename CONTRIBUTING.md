@@ -50,7 +50,7 @@ npm run deploy
 
 # References
 
-At the start of this project I used Python, Flask, and Jinja2 to build a local web server and figured out how to embed React and Bootstrap to get the front-end of the website the way I wanted. After getting frustrated with that, I simply decided to go full Javascript and leveraged https://create-react-app.dev/ to re-build the tech stack from the ground up. The first attempt brought a lot of lessons learned, which made the second go much faster!
+At the start of this project I used Python, Flask, and Jinja2 to build a local web server and figured out how to embed React and Bootstrap to get the front-end of the website the way I wanted. After getting frustrated with that, I simply decided to go full Javascript and leveraged https://create-react-app.dev/ to re-build the tech stack from the ground up. The first attempt brought a lot of lessons learned, which made the second go much faster! Later, as CRA became deprecated and unmaintained, the project was upgraded to Vite as the build tool and dev server, which most closely aligns to CRA as a replacement.
 
 ## First Attempt
 
