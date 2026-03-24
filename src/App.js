@@ -3,6 +3,8 @@ import { useState } from 'react';
 
 // TODO: follow style/conventions from https://github.com/airbnb/javascript/tree/master/react
 
+const EXPR_REGEX = /[+\-*/()]/;
+
 function App() {
 
   //-------------------------------------------------------------------------------------------------------------------//
@@ -37,6 +39,11 @@ function App() {
 
   function precision(x) { return (Math.round(x * 1000) / 1000) };
   function round2divisor(x, divisor) { return (Math.ceil(x * divisor) / divisor) };
+  function formatError(e) {
+    if (!e || e === 0) return '';
+    const p = precision(e);
+    return p === 0 ? '' : `+${p}`;
+  };
   function nearest(value, divisor, option) {
     // Convert value in inches to `# ft #-#/# in` or `#-#/# in`
     // based on specified divisor and option 'ft-in' or 'in' provided.
@@ -75,7 +82,7 @@ function App() {
     }
 
     // round up, subtract value
-    error = (ft2in(wholeFeet) + wholeInch + (numerator / denominator)) - value;
+    error = (ft2in(wholeFeet) + wholeInch + (denominator !== 0 ? numerator / denominator : 0)) - value;
 
     console.log(`value = ${value} valueFeet = ${valueFeet} valueInch = ${valueInch} : wholeFeet = ${wholeFeet} wholeInch = ${wholeInch} fraction = ${numerator}/${denominator}, error = ${error}`)
 
@@ -114,7 +121,7 @@ function App() {
 
   // react Hook for state management - one per html tag
   const [divisor, setDivisor] = useState(16); // default value
-  const fields = { input: [], output: '', error: [] } // global
+  const fields = { input: [], output: '', error: [], calcError: '' } // global
   const [millimeters, setMM] = useState(fields);
   const [inches, setIN] = useState(fields);
   const [feet, setFT] = useState(fields);
@@ -123,7 +130,19 @@ function App() {
   // validate
   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
-  // TODO: mathematical expressions (only allow +, -, *, / symbols) keyed on = as input?
+  function evaluateExpression(str) {
+    if (!str || !/^[\d\s.+\-*/()]+$/.test(str)) return { error: 'Invalid expression' };
+    try {
+      // eslint-disable-next-line no-new-func
+      const result = Function('"use strict"; return (' + str + ')')();
+      if (!isFinite(result) || isNaN(result)) return { error: 'Cannot divide by zero' };
+      if (result < 0) return { error: 'Result must be positive' };
+      return { value: result };
+    } catch (e) {
+      return { error: 'Invalid expression' };
+    }
+  }
+
   function validateMeasurement(event) {
     var value = event.target.value;
     function parseValue(value) {
@@ -165,6 +184,12 @@ function App() {
     setFT(fields);
   };
   const onChangeMM = (event) => {
+    const rawValue = event.target.value;
+
+    if (EXPR_REGEX.test(rawValue)) {
+      setMM({ ...millimeters, input: rawValue, output: '', calcError: '' });
+      return;
+    }
 
     const value = validateMeasurement(event)
 
@@ -189,7 +214,28 @@ function App() {
       error: precision(error)
     });
   };
+  const makeEvaluator = (setField, fieldState, onChange) => (value) => {
+    const outcome = evaluateExpression(value);
+    if ('error' in outcome) {
+      setField({ ...fieldState, input: value, output: '', calcError: outcome.error });
+    } else {
+      onChange({ target: { value: String(outcome.value) } });
+    }
+  };
+  const makeKeyDown = (evaluator) => (event) => {
+    if (event.key !== 'Enter') return;
+    event.preventDefault();
+    evaluator(event.target.value);
+  };
+  const evaluateMM = makeEvaluator(setMM, millimeters, onChangeMM);
+  const onKeyDownMM = makeKeyDown(evaluateMM);
   const onChangeIN = (event) => {
+    const rawValue = event.target.value;
+
+    if (EXPR_REGEX.test(rawValue)) {
+      setIN({ ...inches, input: rawValue, output: '', calcError: '' });
+      return;
+    }
 
     const value = validateMeasurement(event)
 
@@ -214,7 +260,15 @@ function App() {
       error: precision(error)
     });
   };
+  const evaluateIN = makeEvaluator(setIN, inches, onChangeIN);
+  const onKeyDownIN = makeKeyDown(evaluateIN);
   const onChangeFT = (event) => {
+    const rawValue = event.target.value;
+
+    if (EXPR_REGEX.test(rawValue)) {
+      setFT({ ...feet, input: rawValue, output: '', calcError: '' });
+      return;
+    }
 
     const value = validateMeasurement(event)
 
@@ -239,10 +293,18 @@ function App() {
       error: precision(error)
     });
   };
+  const evaluateFT = makeEvaluator(setFT, feet, onChangeFT);
+  const onKeyDownFT = makeKeyDown(evaluateFT);
 
   //-------------------------------------------------------------------------------------------------------------------//
   // front-end - html
   //-------------------------------------------------------------------------------------------------------------------//
+
+  const mmExpr = EXPR_REGEX.test(millimeters.input);
+  const inExpr = EXPR_REGEX.test(inches.input);
+  const ftExpr = EXPR_REGEX.test(feet.input);
+  const inErr = formatError(inches.error);
+  const ftErr = formatError(feet.error);
 
   return (
 
@@ -267,36 +329,65 @@ function App() {
               </select>
             </div>
 
-            <div className="row mt-2">
-              <div className="col">
-                Enter a decimal value in any field:
-              </div>
-            </div>
+            <label className="form-label mt-2">Enter a value or mathematical expression:</label>
 
-            <div className="row mt-2 pt-2 pb-3 rounded bg-light-subtle border">
+            <div className="mt-1 pt-2 pb-3 px-3 rounded bg-light-subtle border">
 
               <label htmlFor="input-mm" className="form-label">Millimeters</label>
-              <div className="input-group">
-                <input id="input-mm" value={millimeters.input} onChange={onChangeMM} type="text" className="form-control col-4" inputMode="decimal" />
-                <span className="input-group-text col-6">{millimeters.output} mm</span>
-                <span className="input-group-text col-2 text-muted">{millimeters.error}</span>
+              <div className="input-group" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(min-content, 1fr)' }}>
+                <input id="input-mm" value={millimeters.input} onChange={onChangeMM} onKeyDown={onKeyDownMM} type="text" className="form-control" inputMode="decimal" placeholder="e.g. 18" style={{ width: '100%' }} />
+                <div style={{ position: 'relative' }}>
+                  <button className="btn btn-outline-secondary h-100" type="button" onClick={() => evaluateMM(millimeters.input)} style={{ visibility: mmExpr ? 'visible' : 'hidden' }}>=</button>
+                  {millimeters.calcError && (
+                    <div className="tooltip bs-tooltip-top show" role="tooltip" style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>
+                      <div className="tooltip-arrow" style={{ left: '50%', transform: 'translateX(-50%)' }} />
+                      <div className="tooltip-inner bg-danger">{millimeters.calcError}</div>
+                    </div>
+                  )}
+                </div>
+                <span className="input-group-text" style={{ justifyContent: 'flex-end' }}>
+                  {millimeters.output} mm
+                </span>
               </div>
 
               <label htmlFor="input-in" className="form-label">Inches</label>
-              <div className="input-group">
-                <input id="input-in" value={inches.input} onChange={onChangeIN} type="text" className="form-control col-4" inputMode="decimal" />
-                <span className="input-group-text col-6">{inches.output || 'in'}</span>
-                <span className="input-group-text col-2 text-muted">{inches.error}</span>
+              <div className="input-group" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(min-content, 1fr)' }}>
+                <input id="input-in" value={inches.input} onChange={onChangeIN} onKeyDown={onKeyDownIN} type="text" className="form-control" inputMode="decimal" placeholder="e.g. 3/4" style={{ width: '100%' }} />
+                <div style={{ position: 'relative' }}>
+                  <button className="btn btn-outline-secondary h-100" type="button" onClick={() => evaluateIN(inches.input)} style={{ visibility: inExpr ? 'visible' : 'hidden' }}>=</button>
+                  {inches.calcError && (
+                    <div className="tooltip bs-tooltip-top show" role="tooltip" style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>
+                      <div className="tooltip-arrow" style={{ left: '50%', transform: 'translateX(-50%)' }} />
+                      <div className="tooltip-inner bg-danger">{inches.calcError}</div>
+                    </div>
+                  )}
+                </div>
+                <span className="input-group-text" style={{ justifyContent: 'flex-end' }}>
+                  {inches.output || 'in'}
+                  <span className="badge bg-secondary ms-2" title="Rounding error" style={{ visibility: inErr ? 'visible' : 'hidden', minWidth: '3.5rem' }}>{inErr}</span>
+                </span>
               </div>
 
               <label htmlFor="input-ft" className="form-label">Feet</label>
-              <div className="input-group">
-                <input id="input-ft" value={feet.input} onChange={onChangeFT} type="text" className="form-control col-4" inputMode="decimal" />
-                <span className="input-group-text col-6">{feet.output || 'ft'}</span>
-                <span className="input-group-text col-2 text-muted">{feet.error}</span>
+              <div className="input-group" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(min-content, 1fr)' }}>
+                <input id="input-ft" value={feet.input} onChange={onChangeFT} onKeyDown={onKeyDownFT} type="text" className="form-control" inputMode="decimal" placeholder="e.g. 96/12" style={{ width: '100%' }} />
+                <div style={{ position: 'relative' }}>
+                  <button className="btn btn-outline-secondary h-100" type="button" onClick={() => evaluateFT(feet.input)} style={{ visibility: ftExpr ? 'visible' : 'hidden' }}>=</button>
+                  {feet.calcError && (
+                    <div className="tooltip bs-tooltip-top show" role="tooltip" style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>
+                      <div className="tooltip-arrow" style={{ left: '50%', transform: 'translateX(-50%)' }} />
+                      <div className="tooltip-inner bg-danger">{feet.calcError}</div>
+                    </div>
+                  )}
+                </div>
+                <span className="input-group-text" style={{ justifyContent: 'flex-end' }}>
+                  {feet.output || 'ft'}
+                  <span className="badge bg-secondary ms-2" title="Rounding error" style={{ visibility: ftErr ? 'visible' : 'hidden', minWidth: '3.5rem' }}>{ftErr}</span>
+                </span>
               </div>
 
             </div>
+
 
           </div>
 

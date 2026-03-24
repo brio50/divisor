@@ -7,6 +7,16 @@ All notable changes to Divisor will be documented in this file.
 > Major and Minor updates will get entries, patches may not get mentions.
 
 
+## [2.0.0] - 2026/03/23
+
+### Added
+
+- Calculator: math expressions (`+`, `-`, `*`, `/`, `()`) accepted in any input field; press Enter or click `=` to evaluate (Req 14)
+- Error tooltip on `=` button for divide-by-zero and negative results
+- Placeholder text on all input fields with expression examples
+- Instructions card below input fields
+- Mobile-first improvements: precision error column hidden on small screens, output spans use `flex-fill` with truncation
+
 ## [1.2.0] - 2026/03/23
 
 ### Added

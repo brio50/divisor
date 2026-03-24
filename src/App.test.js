@@ -174,6 +174,113 @@ test('[Req 13] Typing feet immediately updates mm and inches fields', () => {
   expect(screen.getByLabelText('Inches').value).not.toBe('');
 });
 
+// ------------------------------------------------------------
+// [Req 15] Rounding error display
+// REQUIREMENTS.csv Req 15 (Tier C): show +decimal (n/d) when
+// rounding occurs; blank when exact
+// ------------------------------------------------------------
+
+test('[Req 15] 1.4 in with 1/16 divisor shows rounding error +0.038', () => {
+  render(<App />);
+  fireEvent.change(screen.getByLabelText('Inches'), { target: { value: '1.4' } });
+  expect(screen.getAllByText('+0.038').length).toBeGreaterThan(0);
+});
+
+test('[Req 15] exact value shows no rounding error', () => {
+  render(<App />);
+  fireEvent.change(screen.getByLabelText('Inches'), { target: { value: '1.5' } });
+  expect(screen.queryByText(/^\+/)).not.toBeInTheDocument();
+});
+
+test('[Req 15] sub-fraction error shows decimal only without fraction', () => {
+  render(<App />);
+  fireEvent.change(screen.getByRole('combobox'), { target: { value: '8' } });
+  fireEvent.change(screen.getByLabelText('Inches'), { target: { value: '45.234' } });
+  expect(screen.getAllByText('+0.016').length).toBeGreaterThan(0);
+});
+
+test('[Req 15] error respects selected divisor', () => {
+  render(<App />);
+  fireEvent.change(screen.getByRole('combobox'), { target: { value: '8' } });
+  fireEvent.change(screen.getByLabelText('Inches'), { target: { value: '1.4' } });
+  expect(screen.getAllByText('+0.1').length).toBeGreaterThan(0);
+});
+
+// ------------------------------------------------------------
+// [Req 14] Math expression evaluation
+// REQUIREMENTS.csv Req 14 (Tier C): evaluate basic math
+// expressions; guard against division by zero and negatives
+// ------------------------------------------------------------
+
+test('[Req 14] 12/4 in inches evaluates to 3 on Enter', () => {
+  render(<App />);
+  const input = screen.getByLabelText('Inches');
+  fireEvent.change(input, { target: { value: '12/4' } });
+  fireEvent.keyDown(input, { key: 'Enter' });
+  expect(input.value).toBe('3');
+  expect(screen.getAllByText(/3 in/).length).toBeGreaterThan(0);
+});
+
+test('[Req 14] 12/4 in inches evaluates to 3 via = button', () => {
+  render(<App />);
+  const input = screen.getByLabelText('Inches');
+  fireEvent.change(input, { target: { value: '12/4' } });
+  fireEvent.click(screen.getByRole('button', { name: '=' }));
+  expect(input.value).toBe('3');
+  expect(screen.getAllByText(/3 in/).length).toBeGreaterThan(0);
+});
+
+test('[Req 14] 25.4*2 in mm field evaluates to 50.8 on Enter', () => {
+  render(<App />);
+  const input = screen.getByLabelText('Millimeters');
+  fireEvent.change(input, { target: { value: '25.4*2' } });
+  fireEvent.keyDown(input, { key: 'Enter' });
+  expect(input.value).toBe('50.8');
+});
+
+test('[Req 14] = button only appears when expression is present', () => {
+  render(<App />);
+  expect(screen.queryByRole('button', { name: '=' })).not.toBeInTheDocument();
+  fireEvent.change(screen.getByLabelText('Inches'), { target: { value: '12/4' } });
+  expect(screen.getByRole('button', { name: '=' })).toBeInTheDocument();
+});
+
+test('[Req 14] division by zero shows tooltip and does not crash', () => {
+  render(<App />);
+  const input = screen.getByLabelText('Inches');
+  fireEvent.change(input, { target: { value: '12/0' } });
+  fireEvent.keyDown(input, { key: 'Enter' });
+  expect(input.value).toBe('12/0');
+  expect(screen.getByRole('tooltip')).toHaveTextContent('Cannot divide by zero');
+});
+
+test('[Req 14] negative result shows tooltip and does not crash', () => {
+  render(<App />);
+  const input = screen.getByLabelText('Inches');
+  fireEvent.change(input, { target: { value: '3-10' } });
+  fireEvent.keyDown(input, { key: 'Enter' });
+  expect(input.value).toBe('3-10');
+  expect(screen.getByRole('tooltip')).toHaveTextContent('Result must be positive');
+});
+
+test('[Req 14] error tooltip clears when user resumes typing', () => {
+  render(<App />);
+  const input = screen.getByLabelText('Inches');
+  fireEvent.change(input, { target: { value: '12/0' } });
+  fireEvent.keyDown(input, { key: 'Enter' });
+  expect(screen.getByRole('tooltip')).toBeInTheDocument();
+  fireEvent.change(input, { target: { value: '12/2' } });
+  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
+});
+
+test('[Req 14] non-Enter keydown does not evaluate expression', () => {
+  render(<App />);
+  const input = screen.getByLabelText('Inches');
+  fireEvent.change(input, { target: { value: '12/4' } });
+  fireEvent.keyDown(input, { key: 'Tab' });
+  expect(input.value).toBe('12/4');
+});
+
 test('[Req 13] Changing divisor clears all measurement fields', () => {
   render(<App />);
   fireEvent.change(screen.getByLabelText('Millimeters'), { target: { value: '25.4' } });

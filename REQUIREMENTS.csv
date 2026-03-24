@@ -9,3 +9,5 @@
 11,C,"frontend","Divisor website shall by responsive, adapting to both mobile and desktop screen resolutions",,10,,
 12,D,"frontend","Mobile Divisor users shall be able to input values with numeric keyboard",,11,,
 13,C,"frontend",Divisor website shall offer dynamic interactions,,10,,
+14,C,"backend,frontend",Divisor shall evaluate basic math expressions in any input field,"Allows users to enter expressions like 12/4 before converting; guards against division by zero and negative results","1,2,3",,
+15,C,"frontend",Divisor shall display rounding error as +decimal (n/d) beside each result,"Shows e.g. +0.038 (1/16) when rounding occurs; blank when exact","2,3",,
