@@ -19,15 +19,15 @@ Always consult these files when making changes or evaluating work:
 
 ```bash
 npm start          # Start local dev server (auto-refresh)
-npm test           # Run tests (Jest/React Testing Library)
-npm run build      # Production build to /build
+npm test           # Run tests (Vitest/React Testing Library)
+npm run build      # Production build to /dist
 npm run deploy     # Manually build + deploy to GitHub Pages (tests not gated)
 ```
 
 To run a single test file:
 
 ```bash
-npm test -- --testPathPattern=App.test
+npx vitest run App.test
 ```
 
 ## Testing Against Requirements (Pre-Deploy Checklist)
@@ -36,7 +36,7 @@ Before every deploy, read [REQUIREMENTS.csv](REQUIREMENTS.csv) and verify that a
 
 ## Architecture
 
-This is a single-component React app (Create React App) with no routing or external state management. Everything lives in [src/App.js](src/App.js).
+This is a single-component React app (Vite + React) with no routing or external state management. Everything lives in [src/App.jsx](src/App.jsx).
 
 **Conversion logic (pure functions at top of App.js):**
 

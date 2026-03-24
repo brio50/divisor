@@ -7,6 +7,20 @@ All notable changes to Divisor will be documented in this file.
 > Major and Minor updates will get entries, patches may not get mentions.
 
 
+## [3.0.0] - 2026/03/23
+
+### Changed
+
+- Build toolchain migrated from Create React App (deprecated) to Vite + Vitest
+- Source files renamed to `.jsx` (Vite convention)
+- Build output directory changed from `build/` to `dist/`
+- All dependencies updated to latest versions (React 19, Vite 8, Vitest 4, Bootstrap 5.3.8)
+- `npm start` now uses Vite dev server; `npm test` now uses Vitest
+
+### Removed
+
+- `react-scripts`, `web-vitals`, `reportWebVitals` (CRA-specific)
+
 ## [2.0.1] - 2026/03/23
 
 ### Fixed

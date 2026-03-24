@@ -5,10 +5,10 @@
 
 ## Installation
 
-- [`Node.js`](https://www.jetbrains.com/help/pycharm/installing-and-removing-external-software-using-node-package-manager.html#ws_npm_yarn_configure_package_manager) / `npm`
+- [`Node.js`](https://nodejs.org/) / `npm` — use [`fnm`](https://github.com/Schniz/fnm) to manage Node versions; a `.node-version` file is included in the repo
 
   - Javascript Pacakge Manager - `npm`
-  - Javascript Bundler - `webpack`
+  - Javascript Bundler - `vite` (Rollup)
 
 - `git clone https://github.com/brio50/divisor.git`
 
@@ -28,7 +28,7 @@ This command starts a local development server and open up a browser window. Mos
 npm run build
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+This command generates static content into the `dist` directory and can be served using any static contents hosting service.
 
 ### Testing
 
@@ -61,9 +61,12 @@ At the start of this project I used Python, Flask, and Jinja2 to build a local w
 
 ## Second Attempt
 
-- [**create-react-app**](https://github.com/facebook/create-react-app/tree/main)
+- [**create-react-app**](https://github.com/facebook/create-react-app/tree/main) — used until CRA was deprecated and no longer maintained
+
+## Third Attempt
+
+- [**Vite**](https://vite.dev/) — replaced CRA as the build tool and dev server; React and all app code remained unchanged
 
 ## Inspiration
 
 - [Flask-React-Boilerplate](https://github.com/IceWreck/Flask-React-Boilerplate/tree/master)
-- [](https://www.learnhowtoprogram.com/intermediate-javascript/team-week/hosting-a-webpack-project-with-gh-pages)
