@@ -7,15 +7,30 @@ All notable changes to Divisor will be documented in this file.
 > Major and Minor updates will get entries, patches may not get mentions.
 
 
+## [2.0.1] - 2026/03/23
+
+### Fixed
+
+- CHANGELOG.md 2.0.0 entry corrected (removed inaccurate items)
+- REQUIREMENTS.csv Req 11 typo fixed; Req 15 updated to reflect decimal-only rounding error display
+- CLAUDE.md architecture section corrected (no mathjs dependency); aesthetic principles added
+
 ## [2.0.0] - 2026/03/23
 
 ### Added
 
 - Calculator: math expressions (`+`, `-`, `*`, `/`, `()`) accepted in any input field; press Enter or click `=` to evaluate (Req 14)
 - Error tooltip on `=` button for divide-by-zero and negative results
-- Placeholder text on all input fields with expression examples
-- Instructions card below input fields
-- Mobile-first improvements: precision error column hidden on small screens, output spans use `flex-fill` with truncation
+- Rounding error badge (+decimal) beside inch and feet output; hidden when exact (Req 15)
+- Placeholder text with woodworker-relevant examples (18 mm, 3/4 in, 96/12 ft)
+
+### Changed
+
+- Layout: 50/50 input/output split using CSS grid; output column expands to content at narrow widths (`minmax(min-content, 1fr)`)
+- Rounding error display simplified to decimal only (e.g. `+0.038`); fraction removed
+- Divisor dropdown width aligned to input container
+- Label styling unified across "Select a Divisor" and "Enter a value" sections
+- Workflow renamed to `test-and-deploy`; read/write permissions enabled for GitHub Pages deploy
 
 ## [1.2.0] - 2026/03/23
 
