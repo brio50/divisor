@@ -21,7 +21,7 @@ Always consult these files when making changes or evaluating work:
 npm start          # Start local dev server (auto-refresh)
 npm test           # Run tests (Jest/React Testing Library)
 npm run build      # Production build to /build
-npm run deploy     # Build + deploy to GitHub Pages (gh-pages branch)
+npm run deploy     # Manually build + deploy to GitHub Pages (tests not gated)
 ```
 
 To run a single test file:
@@ -48,4 +48,4 @@ This is a single-component React app (Create React App) with no routing or exter
 
 **mathjs** is used in `validateMeasurement` to evaluate arithmetic expressions entered by the user (e.g. `25.4 * 3`).
 
-**Deployment:** GitHub Pages via the `gh-pages` package. The `homepage` field in `package.json` must stay set to `https://brio50.github.io/divisor`.
+**Deployment:** Automated via [.github/workflows/test-and-deploy.yml](.github/workflows/test-and-deploy.yml) — pushing to `main` runs tests then deploys to the `gh-pages` branch. The `homepage` field in `package.json` must stay set to `https://brio50.github.io/divisor`.

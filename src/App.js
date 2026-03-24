@@ -134,16 +134,16 @@ function App() {
       }
 
       // do not allow leading decimal, comma, or non-numeric
-      if ( value.match(/^(\.|\,|[^0-9])/) ) {
+      if ( value.match(/^(\.|,|[^0-9])/) ) {
         value = "0.";
       }
 
       // limit input to *(.|,)#### (4 decimal places)
       // does not allow letters, or any symbols other than . or ,
-      const regex = /\d+(\.|\,){0,1}\d{0,4}/s;
+      const regex = /\d+(\.|,){0,1}\d{0,4}/s;
 
       if ( value.match(regex)[0] ) {
-        return value.match(regex)[0].replace(/\,/, ".");
+        return value.match(regex)[0].replace(/,/, ".");
       }
 
     }

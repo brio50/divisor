@@ -1,6 +1,6 @@
 # Developer
 
-- Notes for installing dependencies needed to run the app locally with Flask.
+- Notes for installing dependencies needed to run the app locally.
 - Notes for how to deploy application to Github Pages.
 
 ## Installation
@@ -30,13 +30,23 @@ npm run build
 
 This command generates static content into the `build` directory and can be served using any static contents hosting service.
 
+### Testing
+
+```
+npm test
+```
+
+Runs all tests against [REQUIREMENTS.csv](REQUIREMENTS.csv). Tests must pass before deploying.
+
 ### Deployment
 
-```
-GIT_USER=brio50 USE_SSH=1 npm run deploy
-```
+Deployment is automated via GitHub Actions ([.github/workflows/test-and-deploy.yml](.github/workflows/test-and-deploy.yml)). Pushing to `main` triggers the pipeline: install → test → build → deploy to the `gh-pages` branch.
 
-[GitHub pages for hosting](https://create-react-app.dev/docs/deployment#github-pages), this command is a convenient way to build the website and push to the `gh-pages` branch.
+To deploy manually (tests are **not** gated locally):
+
+```
+npm run deploy
+```
 
 # References
 

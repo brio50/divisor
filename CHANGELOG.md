@@ -7,6 +7,18 @@ All notable changes to Divisor will be documented in this file.
 > Major and Minor updates will get entries, patches may not get mentions.
 
 
+## [1.2.0] - 2026/03/23
+
+### Added
+
+- Test framework: 17 tests in `src/App.test.js` mapped to [REQUIREMENTS.csv](REQUIREMENTS.csv) rows (Req 0, 1, 2, 3, 4, 12, 13)
+- CI/CD pipeline via GitHub Actions (`.github/workflows/test-and-deploy.yml`): 3-stage test → build → deploy, triggered on push to `main`
+- `CLAUDE.md` for AI-assisted development guidance
+
+### Fixed
+
+- ESLint `no-useless-escape` warnings in `src/App.js` (unnecessary `\,` in regex patterns)
+
 ## [1.1.0] - 2023/08/26
 
 ### Fixed
