@@ -1,5 +1,5 @@
 import './App.css';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 // TODO: follow style/conventions from https://github.com/airbnb/javascript/tree/master/react
 
@@ -83,8 +83,6 @@ function App() {
     // round up, subtract value
     error = (ft2in(wholeFeet) + wholeInch + (denominator !== 0 ? numerator / denominator : 0)) - value;
 
-    console.log(`value = ${value} valueFeet = ${valueFeet} valueInch = ${valueInch} : wholeFeet = ${wholeFeet} wholeInch = ${wholeInch} fraction = ${numerator}/${denominator}, error = ${error}`)
-
     // format output strings
     switch (option) {
 
@@ -105,7 +103,7 @@ function App() {
         }
 
       default:
-        console.log(`Option may only be 'ft-in' or 'in', user chose '${option}'`)
+        break;
     }
 
   }
@@ -125,6 +123,16 @@ function App() {
   const [inches, setIN] = useState(fields);
   const [feet, setFT] = useState(fields);
   const [lastEdited, setLastEdited] = useState(null);
+  const [log, setLog] = useState([]);
+  const logTimerRef = useRef(null);
+
+  const addLog = (field, value) => {
+    clearTimeout(logTimerRef.current);
+    logTimerRef.current = setTimeout(() => {
+      const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+      setLog(prev => [`${time} [1/${divisor}] ${field}: ${value}`, ...prev].slice(0, 50));
+    }, 1500);
+  };
 
   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
   // validate
@@ -195,7 +203,7 @@ function App() {
       setMM(fields); setIN(fields); setFT(fields);
     }
   };
-  const onClear = () => { setMM(fields); setIN(fields); setFT(fields); setLastEdited(null); };
+  const onClear = () => { setMM(fields); setIN(fields); setFT(fields); setLastEdited(null); setLog([]); };
   const onChangeMM = (event) => {
     setLastEdited('mm');
     const rawValue = event.target.value;
@@ -206,6 +214,7 @@ function App() {
     }
 
     const value = validateMeasurement(event)
+    if (value) addLog('mm', value);
 
     setMM({
       ...millimeters,
@@ -253,6 +262,7 @@ function App() {
     }
 
     const value = validateMeasurement(event)
+    if (value) addLog('in', value);
 
     setMM({
       ...millimeters,
@@ -287,6 +297,7 @@ function App() {
     }
 
     const value = validateMeasurement(event)
+    if (value) addLog('ft', value);
 
     setMM({
       ...millimeters,
@@ -325,31 +336,31 @@ function App() {
 
   return (
 
-    <main className="flex-shrink-1" role="main">
+    <main className="d-flex flex-column flex-grow-1 overflow-hidden" role="main">
 
       <noscript>You need to enable JavaScript to run this app.</noscript>
 
-      <div className="container">
+      <div className="container d-flex flex-column flex-grow-1 min-h-0">
 
-        <div className="row">
+        <div className="row flex-grow-1">
 
-          <div className="col">
-
-            <label className="form-label">Reset:</label>
-            <button className="btn btn-outline-secondary w-100 mb-3" type="button" onClick={onClear}>Clear</button>
+          <div className="col d-flex flex-column overflow-hidden">
 
             <label className="form-label">Select a Divisor:</label>
-            <div className="btn-group w-100 mb-3" role="group" aria-label="Select divisor">
-              {[64, 32, 16, 8, 4].map(d => (
-                <button
-                  key={d}
-                  type="button"
-                  className={`btn btn-outline-secondary${divisor === d ? ' active' : ''}`}
-                  onClick={() => onChangeDivisor(d)}
-                >
-                  1/{d}
-                </button>
-              ))}
+            <div className="d-flex gap-2 mb-3">
+              <div className="btn-group flex-grow-1" role="group" aria-label="Select divisor">
+                {[64, 32, 16, 8].map(d => (
+                  <button
+                    key={d}
+                    type="button"
+                    className={`btn btn-outline-secondary${divisor === d ? ' active' : ''}`}
+                    onClick={() => onChangeDivisor(d)}
+                  >
+                    1/{d}
+                  </button>
+                ))}
+              </div>
+              <button type="button" className="btn btn-outline-danger" onClick={onClear}>C</button>
             </div>
 
             <label className="form-label">Enter a value or mathematical expression:</label>
@@ -413,6 +424,15 @@ function App() {
             <div className={`text-center text-md-end small mt-2 rounding-error ${inErr ? 'text-danger' : 'text-secondary'}`} title="Rounding error">
               rounding error: {errDisplay} in
             </div>
+
+            <label htmlFor="log" className="form-label mt-3">Log</label>
+            <textarea
+              id="log"
+              className="form-control"
+              readOnly
+              value={log.join('\n')}
+              style={{ flex: 1, fontFamily: 'monospace', fontSize: '0.75rem', resize: 'none' }}
+            />
 
           </div>
 

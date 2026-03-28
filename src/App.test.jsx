@@ -1,4 +1,5 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, act } from '@testing-library/react';
+import { vi } from 'vitest';
 import App from './App';
 
 // ------------------------------------------------------------
@@ -50,9 +51,9 @@ test('[Req 2] 1.5 in rounds to "1-1/2 in" with 1/16 divisor', () => {
   expect(screen.getAllByText(/1-1\/2 in/).length).toBeGreaterThan(0);
 });
 
-test('[Req 2] 0.25 in rounds to "0-1/4 in" with 1/4 divisor', () => {
+test('[Req 2] 0.25 in rounds to "0-1/4 in" with 1/8 divisor (fraction reduces)', () => {
   render(<App />);
-  fireEvent.click(screen.getByRole('button', { name: '1/4' }));
+  fireEvent.click(screen.getByRole('button', { name: '1/8' }));
   fireEvent.change(screen.getByLabelText('Inches'), { target: { value: '0.25' } });
   expect(screen.getAllByText(/0-1\/4 in/).length).toBeGreaterThan(0);
 });
@@ -89,11 +90,12 @@ test('[Req 3] 13 in shows as "1 ft 1 in" with 1/16 divisor (no fraction when exa
 // 1/64, 1/32, 1/16, 1/8, 1/4
 // ------------------------------------------------------------
 
-test('[Req 4] Divisor selector offers exactly 1/64, 1/32, 1/16, 1/8, 1/4', () => {
+test('[Req 4] Divisor selector offers exactly 1/64, 1/32, 1/16, 1/8', () => {
   render(<App />);
-  ['1/64', '1/32', '1/16', '1/8', '1/4'].forEach(label => {
+  ['1/64', '1/32', '1/16', '1/8'].forEach(label => {
     expect(screen.getByRole('button', { name: label })).toBeInTheDocument();
   });
+  expect(screen.queryByRole('button', { name: '1/4' })).not.toBeInTheDocument();
 });
 
 test('[Req 4] Default divisor is 1/16', () => {
@@ -183,10 +185,10 @@ test('[Req 13] Changing divisor recalculates from last-edited field', () => {
   expect(screen.getByLabelText('Inches').value).not.toBe('');
 });
 
-test('[Req 13] Clear button resets all fields', () => {
+test('[Req 13] C button resets all fields', () => {
   render(<App />);
   fireEvent.change(screen.getByLabelText('Millimeters'), { target: { value: '25.4' } });
-  fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
+  fireEvent.click(screen.getByRole('button', { name: 'C' }));
   expect(screen.getByLabelText('Millimeters').value).toBe('');
   expect(screen.getByLabelText('Inches').value).toBe('');
   expect(screen.getByLabelText('Feet').value).toBe('');
@@ -321,4 +323,59 @@ test('[Req 16] large ft input (32421.415) renders non-empty output for all field
   expect(screen.getByLabelText('Millimeters').value).not.toBe('');
   expect(screen.getByLabelText('Inches').value).not.toBe('');
   expect(screen.getByLabelText('Feet').value).not.toBe('');
+});
+
+// ------------------------------------------------------------
+// [Req 17] Input log
+// REQUIREMENTS.csv Req 17 (Tier C): debounced log of recent
+// inputs showing timestamp, divisor, field, and value
+// ------------------------------------------------------------
+
+test('[Req 17] log textarea is present and initially empty', () => {
+  render(<App />);
+  expect(screen.getByLabelText('Log').value).toBe('');
+});
+
+test('[Req 17] log records an entry after input settles (debounced)', () => {
+  vi.useFakeTimers();
+  render(<App />);
+  fireEvent.change(screen.getByLabelText('Millimeters'), { target: { value: '25.4' } });
+  expect(screen.getByLabelText('Log').value).toBe('');
+  act(() => { vi.advanceTimersByTime(1500); });
+  expect(screen.getByLabelText('Log').value).toMatch(/mm: 25\.4/);
+  vi.useRealTimers();
+});
+
+test('[Req 17] log entry includes active divisor', () => {
+  vi.useFakeTimers();
+  render(<App />);
+  fireEvent.click(screen.getByRole('button', { name: '1/8' }));
+  fireEvent.change(screen.getByLabelText('Inches'), { target: { value: '6' } });
+  act(() => { vi.advanceTimersByTime(1500); });
+  expect(screen.getByLabelText('Log').value).toMatch(/\[1\/8\] in: 6/);
+  vi.useRealTimers();
+});
+
+test('[Req 17] C button clears the log', () => {
+  vi.useFakeTimers();
+  render(<App />);
+  fireEvent.change(screen.getByLabelText('Millimeters'), { target: { value: '25.4' } });
+  act(() => { vi.advanceTimersByTime(1500); });
+  expect(screen.getByLabelText('Log').value).not.toBe('');
+  fireEvent.click(screen.getByRole('button', { name: 'C' }));
+  expect(screen.getByLabelText('Log').value).toBe('');
+  vi.useRealTimers();
+});
+
+test('[Req 17] rapid typing only logs the final settled value', () => {
+  vi.useFakeTimers();
+  render(<App />);
+  fireEvent.change(screen.getByLabelText('Millimeters'), { target: { value: '1' } });
+  fireEvent.change(screen.getByLabelText('Millimeters'), { target: { value: '12' } });
+  fireEvent.change(screen.getByLabelText('Millimeters'), { target: { value: '125' } });
+  act(() => { vi.advanceTimersByTime(1500); });
+  const lines = screen.getByLabelText('Log').value.trim().split('\n');
+  expect(lines).toHaveLength(1);
+  expect(lines[0]).toMatch(/mm: 125/);
+  vi.useRealTimers();
 });

@@ -7,6 +7,14 @@ All notable changes to Divisor will be documented in this file.
 > Major and Minor updates will get entries, patches may not get mentions.
 
 
+## [3.2.0] - 2026/03/28
+
+### Added
+
+- Input log: a read-only monospace textarea below the rounding error line records each conversion as it is typed, showing timestamp, active divisor, field name, and raw input value (e.g. `09:40:00 AM [1/16] mm: 23.5`); newest entries appear at top, capped at 50
+- Clear button now resets the log in addition to the input fields
+- Internal `console.log` calls removed from `nearest()` (GCD reduction detail, full value breakdown) as the log panel supersedes them
+
 ## [3.1.0] - 2026/03/28
 
 ### Added
