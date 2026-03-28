@@ -68,7 +68,6 @@ function App() {
     // reduce fraction based on greatest common denominator
     const gcd = findGcd(Number(numerator), Number(denominator))
     if (!isNaN(gcd)) {
-      console.log(`gcd=${gcd} : ${numerator}/${denominator} reduced to ...`)
       numerator = numerator / gcd;
       denominator = denominator / gcd;
     }
@@ -125,6 +124,7 @@ function App() {
   const [millimeters, setMM] = useState(fields);
   const [inches, setIN] = useState(fields);
   const [feet, setFT] = useState(fields);
+  const [lastEdited, setLastEdited] = useState(null);
 
   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
   // validate
@@ -174,16 +174,30 @@ function App() {
   //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++//
 
   // TODO: consider useReducer instead of useState and spread operator (...)
-  const onChangeSelect = (event) => {
-    const value = event.target.value;
-    setDivisor(value);
-    // we don't know which input field should be used at divisor selector change
-    // so clear all measurement input fields when divisor is updated
-    setMM(fields);
-    setIN(fields);
-    setFT(fields);
+  const onChangeDivisor = (d) => {
+    setDivisor(d);
+    if (lastEdited === 'mm' && millimeters.input) {
+      const val = Number(millimeters.input);
+      setMM({ ...millimeters, output: precision(val), error: precision(0) });
+      setIN({ ...inches, input: precision(mm2in(val)), output: nearest(mm2in(val), d, 'in'), error: precision(error) });
+      setFT({ ...feet, input: precision(in2ft(mm2in(val))), output: nearest(mm2in(val), d, 'ft-in'), error: precision(error) });
+    } else if (lastEdited === 'in' && inches.input) {
+      const val = Number(inches.input);
+      setMM({ ...millimeters, input: precision(in2mm(val)), output: precision(in2mm(val)), error: precision(0) });
+      setIN({ ...inches, output: nearest(val, d, 'in'), error: precision(error) });
+      setFT({ ...feet, input: precision(in2ft(val)), output: nearest(val, d, 'ft-in'), error: precision(error) });
+    } else if (lastEdited === 'ft' && feet.input) {
+      const val = Number(feet.input);
+      setMM({ ...millimeters, input: precision(in2mm(ft2in(val))), output: precision(in2mm(ft2in(val))), error: precision(0) });
+      setIN({ ...inches, input: precision(ft2in(val)), output: nearest(ft2in(val), d, 'in'), error: precision(error) });
+      setFT({ ...feet, output: nearest(ft2in(val), d, 'ft-in'), error: precision(error) });
+    } else {
+      setMM(fields); setIN(fields); setFT(fields);
+    }
   };
+  const onClear = () => { setMM(fields); setIN(fields); setFT(fields); setLastEdited(null); };
   const onChangeMM = (event) => {
+    setLastEdited('mm');
     const rawValue = event.target.value;
 
     if (EXPR_REGEX.test(rawValue)) {
@@ -230,6 +244,7 @@ function App() {
   const evaluateMM = makeEvaluator(setMM, millimeters, onChangeMM);
   const onKeyDownMM = makeKeyDown(evaluateMM);
   const onChangeIN = (event) => {
+    setLastEdited('in');
     const rawValue = event.target.value;
 
     if (EXPR_REGEX.test(rawValue)) {
@@ -263,6 +278,7 @@ function App() {
   const evaluateIN = makeEvaluator(setIN, inches, onChangeIN);
   const onKeyDownIN = makeKeyDown(evaluateIN);
   const onChangeFT = (event) => {
+    setLastEdited('ft');
     const rawValue = event.target.value;
 
     if (EXPR_REGEX.test(rawValue)) {
@@ -304,7 +320,8 @@ function App() {
   const inExpr = EXPR_REGEX.test(inches.input);
   const ftExpr = EXPR_REGEX.test(feet.input);
   const inErr = formatError(inches.error);
-  const ftErr = formatError(feet.error);
+  const errValue = Number(inches.error);
+  const errDisplay = errValue > 0 ? `+${errValue.toFixed(3)}` : '0.000';
 
   return (
 
@@ -318,77 +335,84 @@ function App() {
 
           <div className="col">
 
-            <label htmlFor="input-divisor" className="form-label">Select a Divisor:</label>
-            <div className="input-group">
-              <select id="input-divisor" className="form-select align-middle mb-3" aria-label="divisor" value={divisor || '16'} onChange={onChangeSelect} >
-                <option value="64">1/64</option>
-                <option value="32">1/32</option>
-                <option value="16">1/16</option>
-                <option value="8">1/8</option>
-                <option value="4">1/4</option>
-              </select>
+            <label className="form-label">Reset:</label>
+            <button className="btn btn-outline-secondary w-100 mb-3" type="button" onClick={onClear}>Clear</button>
+
+            <label className="form-label">Select a Divisor:</label>
+            <div className="btn-group w-100 mb-3" role="group" aria-label="Select divisor">
+              {[64, 32, 16, 8, 4].map(d => (
+                <button
+                  key={d}
+                  type="button"
+                  className={`btn btn-outline-secondary${divisor === d ? ' active' : ''}`}
+                  onClick={() => onChangeDivisor(d)}
+                >
+                  1/{d}
+                </button>
+              ))}
             </div>
 
-            <label className="form-label mt-2">Enter a value or mathematical expression:</label>
+            <label className="form-label">Enter a value or mathematical expression:</label>
 
             <div className="mt-1 pt-2 pb-3 px-3 rounded bg-light-subtle border">
 
               <label htmlFor="input-mm" className="form-label">Millimeters</label>
-              <div className="input-group measurement-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(min-content, 1fr)' }}>
-                <input id="input-mm" value={millimeters.input} onChange={onChangeMM} onKeyDown={onKeyDownMM} type="text" className="form-control" inputMode="decimal" placeholder="e.g. 18" style={{ width: '100%' }} />
-                <div className="measurement-eq" style={{ position: 'relative' }}>
-                  <button className="btn btn-outline-secondary h-100" type="button" onClick={() => evaluateMM(millimeters.input)} style={{ visibility: mmExpr ? 'visible' : 'hidden' }}>=</button>
+              <div className="input-group measurement-row">
+                <input id="input-mm" value={millimeters.input} onChange={onChangeMM} onKeyDown={onKeyDownMM} type="text" className="form-control" inputMode="decimal" placeholder="e.g. 18" />
+                <div className="measurement-eq position-relative">
+                  <button type="button" onClick={() => evaluateMM(millimeters.input)} className={`btn btn-outline-secondary h-100${mmExpr ? '' : ' invisible'}`} aria-hidden={!mmExpr}>=</button>
                   {millimeters.calcError && (
-                    <div className="tooltip bs-tooltip-top show" role="tooltip" style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>
-                      <div className="tooltip-arrow" style={{ left: '50%', transform: 'translateX(-50%)' }} />
+                    <div className="tooltip bs-tooltip-top show calc-error-tooltip" role="tooltip">
+                      <div className="tooltip-arrow" />
                       <div className="tooltip-inner bg-danger">{millimeters.calcError}</div>
                     </div>
                   )}
                 </div>
-                <span className="input-group-text measurement-output" style={{ justifyContent: 'flex-end' }}>
+                <span className="input-group-text measurement-output justify-content-end">
                   {millimeters.output} mm
                 </span>
               </div>
 
               <label htmlFor="input-in" className="form-label">Inches</label>
-              <div className="input-group measurement-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(min-content, 1fr)' }}>
-                <input id="input-in" value={inches.input} onChange={onChangeIN} onKeyDown={onKeyDownIN} type="text" className="form-control" inputMode="decimal" placeholder="e.g. 3/4" style={{ width: '100%' }} />
-                <div className="measurement-eq" style={{ position: 'relative' }}>
-                  <button className="btn btn-outline-secondary h-100" type="button" onClick={() => evaluateIN(inches.input)} style={{ visibility: inExpr ? 'visible' : 'hidden' }}>=</button>
+              <div className="input-group measurement-row">
+                <input id="input-in" value={inches.input} onChange={onChangeIN} onKeyDown={onKeyDownIN} type="text" className="form-control" inputMode="decimal" placeholder="e.g. 3/4" />
+                <div className="measurement-eq position-relative">
+                  <button type="button" onClick={() => evaluateIN(inches.input)} className={`btn btn-outline-secondary h-100${inExpr ? '' : ' invisible'}`} aria-hidden={!inExpr}>=</button>
                   {inches.calcError && (
-                    <div className="tooltip bs-tooltip-top show" role="tooltip" style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>
-                      <div className="tooltip-arrow" style={{ left: '50%', transform: 'translateX(-50%)' }} />
+                    <div className="tooltip bs-tooltip-top show calc-error-tooltip" role="tooltip">
+                      <div className="tooltip-arrow" />
                       <div className="tooltip-inner bg-danger">{inches.calcError}</div>
                     </div>
                   )}
                 </div>
-                <span className="input-group-text measurement-output" style={{ justifyContent: 'flex-end' }}>
+                <span className={`input-group-text measurement-output justify-content-end bg-light${inErr ? ' border-danger-subtle' : ''}`}>
                   {inches.output || 'in'}
-                  <span className="badge bg-secondary ms-2" title="Rounding error" style={{ visibility: inErr ? 'visible' : 'hidden', minWidth: '3.5rem' }}>{inErr}</span>
                 </span>
               </div>
 
               <label htmlFor="input-ft" className="form-label">Feet</label>
-              <div className="input-group measurement-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(min-content, 1fr)' }}>
-                <input id="input-ft" value={feet.input} onChange={onChangeFT} onKeyDown={onKeyDownFT} type="text" className="form-control" inputMode="decimal" placeholder="e.g. 96/12" style={{ width: '100%' }} />
-                <div className="measurement-eq" style={{ position: 'relative' }}>
-                  <button className="btn btn-outline-secondary h-100" type="button" onClick={() => evaluateFT(feet.input)} style={{ visibility: ftExpr ? 'visible' : 'hidden' }}>=</button>
+              <div className="input-group measurement-row">
+                <input id="input-ft" value={feet.input} onChange={onChangeFT} onKeyDown={onKeyDownFT} type="text" className="form-control" inputMode="decimal" placeholder="e.g. 96/12" />
+                <div className="measurement-eq position-relative">
+                  <button type="button" onClick={() => evaluateFT(feet.input)} className={`btn btn-outline-secondary h-100${ftExpr ? '' : ' invisible'}`} aria-hidden={!ftExpr}>=</button>
                   {feet.calcError && (
-                    <div className="tooltip bs-tooltip-top show" role="tooltip" style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>
-                      <div className="tooltip-arrow" style={{ left: '50%', transform: 'translateX(-50%)' }} />
+                    <div className="tooltip bs-tooltip-top show calc-error-tooltip" role="tooltip">
+                      <div className="tooltip-arrow" />
                       <div className="tooltip-inner bg-danger">{feet.calcError}</div>
                     </div>
                   )}
                 </div>
-                <span className="input-group-text measurement-output" style={{ justifyContent: 'flex-end' }}>
+                <span className={`input-group-text measurement-output justify-content-end bg-light${inErr ? ' border-danger-subtle' : ''}`}>
                   {feet.output || 'ft'}
-                  <span className="badge bg-secondary ms-2" title="Rounding error" style={{ visibility: ftErr ? 'visible' : 'hidden', minWidth: '3.5rem' }}>{ftErr}</span>
                 </span>
               </div>
 
 
             </div>
 
+            <div className={`text-center text-md-end small mt-2 rounding-error ${inErr ? 'text-danger' : 'text-secondary'}`} title="Rounding error">
+              rounding error: {errDisplay} in
+            </div>
 
           </div>
 

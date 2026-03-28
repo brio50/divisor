@@ -2,6 +2,41 @@
   text-align: center;
 }
 
+.measurement-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.measurement-row > .form-control,
+.measurement-row > .input-group-text {
+  width: 100%;
+}
+
+.measurement-eq {
+  padding: 0 0.375rem;
+}
+
+.measurement-output {
+  transition: border-color 0.2s ease;
+}
+
+.rounding-error {
+  transition: color 0.2s ease;
+}
+
+.calc-error-tooltip {
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.calc-error-tooltip .tooltip-arrow {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 @media (max-width: 767px) {
   .measurement-row {
     grid-template-columns: 1fr !important;
@@ -20,20 +55,3 @@
     justify-content: center !important;
   }
 }
-
-/* 
-@media (prefers-reduced-motion: no-preference) {
-  .svg-inline--fa {
-    animation: App-logo-spin infinite 20s linear;
-  }
-} 
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-*/

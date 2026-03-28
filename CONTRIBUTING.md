@@ -5,7 +5,9 @@
 
 ## Installation
 
-- [`Node.js`](https://nodejs.org/) / `npm` — use [`fnm`](https://github.com/Schniz/fnm) to manage Node versions; a `.node-version` file is included in the repo
+- [`Node.js`](https://nodejs.org/) / `npm` — use [`fnm`](https://github.com/Schniz/fnm) to manage Node versions; a `.node-version` file pins the required version
+  - Install fnm, then add `eval "$(fnm env --shell bash)"` to `~/.bashrc`
+  - Run `fnm install && fnm use` in the repo root to activate the correct Node version before running any `npm` commands
 
   - Javascript Pacakge Manager - `npm`
   - Javascript Bundler - `vite` (Rollup)

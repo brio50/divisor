@@ -7,6 +7,31 @@ All notable changes to Divisor will be documented in this file.
 > Major and Minor updates will get entries, patches may not get mentions.
 
 
+## [3.1.0] - 2026/03/28
+
+### Added
+
+- Divisor selector replaced with a button group (1/64 through 1/4) for faster selection, especially on mobile
+- Clear button (full-width, below divisor buttons) to reset all fields
+- Rounding error indicator: output boxes highlight with a subtle red border when rounding occurs; a text line below reports the exact error (e.g. `rounding error: +0.060 in`) with color transition
+- Divisor switching now dynamically recalculates from the last-edited field instead of clearing inputs
+
+### Changed
+
+- Reset section (label + Clear button) moved above the Select a Divisor section to visually separate the two controls
+- Rounding error display moved from inline badges on each output row to a single line below the input group
+- Bootstrap inline styles replaced with utility classes throughout (`bg-light`, `border-danger-subtle`, `position-relative`, `invisible`, `justify-content-end`, etc.)
+- Grid layout for measurement rows moved from inline styles to CSS class
+- Tooltip positioning moved from inline styles to CSS class
+
+### Fixed
+
+- Bootstrap loaded after App.css causing `display: flex` to silently override `display: grid` on measurement rows; import order corrected so Bootstrap loads first
+- Duplicate `className` prop on `=` buttons caused the second to overwrite the first, stripping `btn`/`h-100` styles and breaking row height alignment
+- Bootstrap's `.input-group > .form-control` sets `width: 1%` for flexbox use; overridden with `width: 100%` so inputs fill their grid cell correctly
+- `=` buttons now carry `aria-hidden` when no expression is active, allowing tests (and screen readers) to distinguish visible from invisible buttons
+- Mobile: rounding error line centered via `text-center text-md-end` (was right-aligned on all viewport
+
 ## [3.0.1] - 2026/03/28
 
 ### Fixed
