@@ -11,3 +11,4 @@
 13,C,"frontend",Divisor website shall offer dynamic interactions,,10,,
 14,C,"backend,frontend",Divisor shall evaluate basic math expressions in any input field,"Allows users to enter expressions like 12/4 before converting; guards against division by zero and negative results","1,2,3",,
 15,C,"frontend",Divisor shall display rounding error as +decimal beside each result,"Shows e.g. +0.038 when rounding occurs; blank when exact","2,3",,
+16,C,"frontend","Divisor shall not overflow input or output fields for large values on mobile","All field content shall remain fully visible and within bounds regardless of input magnitude",11,,

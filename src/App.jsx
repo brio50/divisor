@@ -334,9 +334,9 @@ function App() {
             <div className="mt-1 pt-2 pb-3 px-3 rounded bg-light-subtle border">
 
               <label htmlFor="input-mm" className="form-label">Millimeters</label>
-              <div className="input-group" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(min-content, 1fr)' }}>
+              <div className="input-group measurement-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(min-content, 1fr)' }}>
                 <input id="input-mm" value={millimeters.input} onChange={onChangeMM} onKeyDown={onKeyDownMM} type="text" className="form-control" inputMode="decimal" placeholder="e.g. 18" style={{ width: '100%' }} />
-                <div style={{ position: 'relative' }}>
+                <div className="measurement-eq" style={{ position: 'relative' }}>
                   <button className="btn btn-outline-secondary h-100" type="button" onClick={() => evaluateMM(millimeters.input)} style={{ visibility: mmExpr ? 'visible' : 'hidden' }}>=</button>
                   {millimeters.calcError && (
                     <div className="tooltip bs-tooltip-top show" role="tooltip" style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>
@@ -345,15 +345,15 @@ function App() {
                     </div>
                   )}
                 </div>
-                <span className="input-group-text" style={{ justifyContent: 'flex-end' }}>
+                <span className="input-group-text measurement-output" style={{ justifyContent: 'flex-end' }}>
                   {millimeters.output} mm
                 </span>
               </div>
 
               <label htmlFor="input-in" className="form-label">Inches</label>
-              <div className="input-group" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(min-content, 1fr)' }}>
+              <div className="input-group measurement-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(min-content, 1fr)' }}>
                 <input id="input-in" value={inches.input} onChange={onChangeIN} onKeyDown={onKeyDownIN} type="text" className="form-control" inputMode="decimal" placeholder="e.g. 3/4" style={{ width: '100%' }} />
-                <div style={{ position: 'relative' }}>
+                <div className="measurement-eq" style={{ position: 'relative' }}>
                   <button className="btn btn-outline-secondary h-100" type="button" onClick={() => evaluateIN(inches.input)} style={{ visibility: inExpr ? 'visible' : 'hidden' }}>=</button>
                   {inches.calcError && (
                     <div className="tooltip bs-tooltip-top show" role="tooltip" style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>
@@ -362,16 +362,16 @@ function App() {
                     </div>
                   )}
                 </div>
-                <span className="input-group-text" style={{ justifyContent: 'flex-end' }}>
+                <span className="input-group-text measurement-output" style={{ justifyContent: 'flex-end' }}>
                   {inches.output || 'in'}
                   <span className="badge bg-secondary ms-2" title="Rounding error" style={{ visibility: inErr ? 'visible' : 'hidden', minWidth: '3.5rem' }}>{inErr}</span>
                 </span>
               </div>
 
               <label htmlFor="input-ft" className="form-label">Feet</label>
-              <div className="input-group" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(min-content, 1fr)' }}>
+              <div className="input-group measurement-row" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(min-content, 1fr)' }}>
                 <input id="input-ft" value={feet.input} onChange={onChangeFT} onKeyDown={onKeyDownFT} type="text" className="form-control" inputMode="decimal" placeholder="e.g. 96/12" style={{ width: '100%' }} />
-                <div style={{ position: 'relative' }}>
+                <div className="measurement-eq" style={{ position: 'relative' }}>
                   <button className="btn btn-outline-secondary h-100" type="button" onClick={() => evaluateFT(feet.input)} style={{ visibility: ftExpr ? 'visible' : 'hidden' }}>=</button>
                   {feet.calcError && (
                     <div className="tooltip bs-tooltip-top show" role="tooltip" style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', whiteSpace: 'nowrap' }}>
@@ -380,11 +380,12 @@ function App() {
                     </div>
                   )}
                 </div>
-                <span className="input-group-text" style={{ justifyContent: 'flex-end' }}>
+                <span className="input-group-text measurement-output" style={{ justifyContent: 'flex-end' }}>
                   {feet.output || 'ft'}
                   <span className="badge bg-secondary ms-2" title="Rounding error" style={{ visibility: ftErr ? 'visible' : 'hidden', minWidth: '3.5rem' }}>{ftErr}</span>
                 </span>
               </div>
+
 
             </div>
 

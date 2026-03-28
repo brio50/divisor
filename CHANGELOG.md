@@ -7,6 +7,14 @@ All notable changes to Divisor will be documented in this file.
 > Major and Minor updates will get entries, patches may not get mentions.
 
 
+## [3.0.1] - 2026/03/28
+
+### Fixed
+
+- Mobile layout: output column now uses equal-width split (`minmax(0, 1fr)`) preventing overflow for large values (Req 16)
+- Mobile layout: stacked input/output fields have consistent full width, restored border-radius, and centered text
+- REQUIREMENTS.csv Req 16 reworded to describe intent without prescribing implementation
+
 ## [3.0.0] - 2026/03/23
 
 ### Changed

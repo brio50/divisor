@@ -281,6 +281,29 @@ test('[Req 14] non-Enter keydown does not evaluate expression', () => {
   expect(input.value).toBe('12/4');
 });
 
+// ------------------------------------------------------------
+// [Req 16] No layout overflow for large inputs
+// REQUIREMENTS.csv Req 16 (Tier C): output column must use a
+// fixed width so large values cannot push the input off-screen
+// ------------------------------------------------------------
+
+test('[Req 16] output column uses a fixed width (no min-content) on all three rows', () => {
+  render(<App />);
+  const grids = document.querySelectorAll('[style*="gridTemplateColumns"]');
+  expect(grids.length).toBe(3);
+  grids.forEach(grid => {
+    expect(grid.style.gridTemplateColumns).not.toContain('min-content');
+  });
+});
+
+test('[Req 16] large ft input (32421.415) renders non-empty output for all fields', () => {
+  render(<App />);
+  fireEvent.change(screen.getByLabelText('Feet'), { target: { value: '32421.415' } });
+  expect(screen.getByLabelText('Millimeters').value).not.toBe('');
+  expect(screen.getByLabelText('Inches').value).not.toBe('');
+  expect(screen.getByLabelText('Feet').value).not.toBe('');
+});
+
 test('[Req 13] Changing divisor clears all measurement fields', () => {
   render(<App />);
   fireEvent.change(screen.getByLabelText('Millimeters'), { target: { value: '25.4' } });
